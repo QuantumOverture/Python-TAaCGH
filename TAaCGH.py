@@ -1,23 +1,20 @@
 ########################################## CORE ####################################################################################
-import from subprocess import call
+from subprocess import call
+import sys
 # adapted from https://github.com/recantha/EduKit3-RC-Keyboard/blob/master/rc_keyboard.py --> getch() function only
 
 #ScriptNumber = ["DO NOT USE THIS INDEX",Script1(),Script2(),Script3(),Script3B(),Script4(),Script5(),Script5(),Script6(),Script7(),Script8(),Script9(),Script10(),Script11()]
 
 Line_Headers = [ "DO NOT USE THIS INDEX","1_impute_aCGH.R","2_cgh_dictionary_cytoband.R","3_Transposed_aCGH.R","3b_dist_Q05.R","4_hom_stats_parts.py","5_sig_pcalc_parts.R","6_FDR.R","7_vis_curves.R","8_probesFDR.R","9_mean_diff.perm.R","10_class_pat_CM.R","11_class_pat_seg.R","Script_4_run","Script_5_run"]
 
-import sys, termios, tty, os, time
- 
-def getch():
-    fd = sys.stdin.fileno()
-    old_settings = termios.tcgetattr(fd)
-    try:
-        tty.setraw(sys.stdin.fileno())
-        ch = sys.stdin.read(1)
- 
-    finally:
-        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-    return ch
+def delete_lines(lines):
+    for i in range(0,lines+1):
+        #cursor up one line
+        sys.stdout.write('\x1b[1A')
+        #delete last line
+        sys.stdout.write('\x1b[2K')
+
+
 ########################################### END OF CORE ############################################################################
 
 
@@ -63,7 +60,26 @@ def ChooseSpecificScript():
     ScriptNumber[CurrentScript]
     return CurrentScript # For saving your phase progress 
 
-def MakeMenu():
+def MakeMenu(OptionList,Prompt):
+    counter = 1
+    for i in OptionList:
+        print("Enter "+str(counter)+" for : "+i)
+        counter+=1
+    UserInput = input(Prompt+": ")
+    try:
+        UserInput = int(UserInput)
+    except:
+        pass
+    counter = len(OptionList)+1
+    while( type(UserInput) is not int or (UserInput<1 or UserInput>len(OptionList)) ):
+        UserInput = input("[INCORRECT FORMAT OR OUT OF BOUND - PLEASE ENTER AGAIN]"+Prompt+": ")
+        counter+=1
+        try:
+            UserInput = int(UserInput)
+        except:
+            pass
+    delete_lines(counter)
+    return int(UserInput)
 
 
 
@@ -71,20 +87,13 @@ def MakeMenu():
 
 ########################################## MODES ####################################################################################
 def RegularMode():
-    counter = 1
-
-    # While not for error checking
-    while counter<14:
-        print("Enter r for: run selected Script")
-        print("Enter q for: Save and quit progress")
-        print("Enter the number for the corresponding script you want to run")  
-        Phase = input("Would you like to run "+ Line_Headers[counter])
+    pass
 ########################################## END OF MODES ####################################################################################
 
 
 
 
-
+MakeMenu(["item 1","item 2","item 3"], "Enter one please")
 
 
 
