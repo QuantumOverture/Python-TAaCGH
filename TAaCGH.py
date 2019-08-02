@@ -133,6 +133,32 @@ ScriptCalls = {
 } 
 
 
+ParametersForEachScript = ["DO NOT USE THIS INDEX" ,"dataSet","dataSet numParts action segLength subdir", "dataSet","dataSet arms/sect","dataSet homDim partNum epsIncr action","param phenotype dataSet partNum action outliers subdir", "name_of_dataSet/file Parameter phenotype Parts Perm sig subdir","param phenotype dataSet action subdir","Parameter phenotype name_of_dataSet/file subdir perm sig seed","name_of_dataSet/file seglength phenotype permutation sig seed","Sorry, you need to manually edit this file","Sorry, you need to manually edit this file"]
+
+ParameterHelp = ["DO NOT USE THIS INDEX",
+#Script 1
+[ "fileName without including the txt extension (e.g. \"set\")"],
+#Script 2
+["short name for dataSet (e.g. set)","number of parts to split the dictionary. Usually 8","arms, sections","Section size (Best: 20 to 50). In the case of arms it will take the full arm, but
+segLength will be the minimum number of probes to run a specific arm.","a directory within /dataSet dir to read the dictionaries.use arms if action=arms or sect if action=sections.you can use a different directory if running subsets of the original dictionaries"],
+#Script 3
+["(sj, sim6, simC3 climent, etc.)"],
+#Script 3B
+["(sj, sim6, simC3 climent, etc.)","arms/sect"],
+#Script 4
+["(sj, climent, sim, etc.)","(usually 1 or 2, which computes B0 or (B0 and B1), respectively.","(a positive integer)","(usually 0.01 or 0.05)","(arms or sect) specify if you are running full arms or sections (as used in 2_cgh_dictionary_cytoband.R)"],
+#Script 5
+["(B0, B1, D, CC)","(ERBB2, basal, test, sim, etc)","(SET, etc)","(an integer with the part from the dictionary)","arms, sect (for sections)","yes, no","a directory within /dataSet dir to read the dictionaries"],
+#Script 6
+["Name of dataset/file","(B0, B1, etc)","(lumA, test, sim, rec, etc)","(in which the directory was split (TOTAL))","number of permutations used to modify 0 p-values (e.g. 1/10,000=0.0001, pvalue[0]=0.0001)","desired false discovery rate (fdr) for the significant sections","a directory within /file to send the results and read dictionaries, sig_pcalc files"],
+#Script 7
+["(B0, B1)","(ERBB2, basal, test, sim, etc)","(SET, etc)"," arms, sect (for sections)","(where the dictionaries where saved)"],
+#Script 8
+["(B0, B1, etc)","(lumA, test, sim, rec, etc)","Name of dataset/file","(where the dictionaries were saved and where the p-values were saved)","number of permutations used to modify 0 p-values (e.g. 1/10,000=0.0001, pvalue[0]=0.0001)","desired false discovery rate (fdr) for the significant sections","any integer number for reproducible research"],
+#Script 9
+["Name of dataset/file"," Section size, use the same number used in the dictionary.This will be the minimum number of probes needed to run a specific arm","(lumA, rec, test, etc)","number of permutations used to modify 0 p-values(e.g. 1/10,000=0.0001, pvalue[0]=0.0001)","desired false discovery rate (fdr) for the significant sections","an integer as a seed to have reproducible research"]
+
+]
 
 Line_Headers = [ "DO NOT USE THIS INDEX","1_impute_aCGH.R","2_cgh_dictionary_cytoband.R","3_Transposed_aCGH.R","3b_dist_Q05.R","4_hom_stats_parts.py","5_sig_pcalc_parts.R","6_FDR.R","7_vis_curves.R","8_probesFDR.R","9_mean_diff.perm.R","10_class_pat_CM.R","11_class_pat_seg.R","Script_4_run","Script_5_run"]
 
@@ -189,7 +215,18 @@ def MakeMenu(OptionList,Prompt):
     delete_lines(counter)
     return int(UserInput)
 
+def SetupParameterFile():
+    ParameterFile = open("Parameter.txt","w")
 
+    ParameterEdits = MakeMenu(["Yes","No"],"Would you like to pre-write the parameters for the scripts you will running[REQUIRED FOR AUTO MODE BUT NOT NECCESSARY FOR REGULAR MODE?")
+    if( ParameterEdits == 1):
+        EditEnabled = True
+    else:
+        EditEnabled = False
+
+
+
+    ParameterFile.close()
 
 ################################################ END UTILITIES #######################################################################
 
