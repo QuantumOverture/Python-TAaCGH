@@ -1,6 +1,6 @@
 ########################################## CORE ####################################################################################
 from subprocess import call
-import sys,readline
+import sys,readline,os
 # adapted from https://github.com/recantha/EduKit3-RC-Keyboard/blob/master/rc_keyboard.py --> getch() function only
 
 
@@ -117,6 +117,8 @@ def ClearScript11():
 
 # use List Comprehension for Script calls
 
+
+
 ScriptCalls = {
         "Script1":Script1,
         "Script2":Script2,
@@ -139,8 +141,7 @@ ParameterHelp = ["DO NOT USE THIS INDEX",
 #Script 1
 [ "fileName without including the txt extension (e.g. \"set\")"],
 #Script 2
-["short name for dataSet (e.g. set)","number of parts to split the dictionary. Usually 8","arms, sections","Section size (Best: 20 to 50). In the case of arms it will take the full arm, but
-segLength will be the minimum number of probes to run a specific arm.","a directory within /dataSet dir to read the dictionaries.use arms if action=arms or sect if action=sections.you can use a different directory if running subsets of the original dictionaries"],
+["short name for dataSet (e.g. set)","number of parts to split the dictionary. Usually 8","arms, sections","Section size. In the case of arms --> fullarm, but segLength --> minimum number of probes to run a specific arm.","a directory within /dataSet dir to read the dictionaries.use arms if action=arms or sect if action=sections."],
 #Script 3
 ["(sj, sim6, simC3 climent, etc.)"],
 #Script 3B
@@ -154,9 +155,9 @@ segLength will be the minimum number of probes to run a specific arm.","a direct
 #Script 7
 ["(B0, B1)","(ERBB2, basal, test, sim, etc)","(SET, etc)"," arms, sect (for sections)","(where the dictionaries where saved)"],
 #Script 8
-["(B0, B1, etc)","(lumA, test, sim, rec, etc)","Name of dataset/file","(where the dictionaries were saved and where the p-values were saved)","number of permutations used to modify 0 p-values (e.g. 1/10,000=0.0001, pvalue[0]=0.0001)","desired false discovery rate (fdr) for the significant sections","any integer number for reproducible research"],
+["(B0, B1, etc)","(lumA, test, sim, rec, etc)","Name of dataset/file","(where the dictionaries were saved and where the p-values were saved)","number of permutations used to modify 0 p-values","desired false discovery rate (fdr) for the sig. sections","any integer num for reproducible research"],
 #Script 9
-["Name of dataset/file"," Section size, use the same number used in the dictionary.This will be the minimum number of probes needed to run a specific arm","(lumA, rec, test, etc)","number of permutations used to modify 0 p-values(e.g. 1/10,000=0.0001, pvalue[0]=0.0001)","desired false discovery rate (fdr) for the significant sections","an integer as a seed to have reproducible research"]
+["Name of dataset/file"," Section size, use the same number used in the dictionary.This will be the minimum number of probes needed to run a specific arm","(lumA, rec, test, etc)","number of permutations used to modify 0 p-values","desired false discovery rate (fdr) for the significant sections","an integer as a seed to have reproducible research"]
 
 ]
 
@@ -217,16 +218,141 @@ def MakeMenu(OptionList,Prompt):
 
 def SetupParameterFile():
     ParameterFile = open("Parameter.txt","w")
-
+    ParameterFile.write("PLEASE DO NOT EDIT THIS FINAL MANUALLY UNLESS YOU KNOW WHAT YOU ARE DOING!!\n")
     ParameterEdits = MakeMenu(["Yes","No"],"Would you like to pre-write the parameters for the scripts you will running[REQUIRED FOR AUTO MODE BUT NOT NECCESSARY FOR REGULAR MODE?")
     if( ParameterEdits == 1):
         EditEnabled = True
     else:
         EditEnabled = False
+    
+    for i in range(1,len(Line_Headers)-5):
+        CurrentParameters = ParametersForEachScript[i].split(" ")
+        ParameterFile.write(Line_Headers[i]+" ")
+        if(EditEnabled):
+            for j in range(0,len(CurrentParameters)):
+                print(Line_Headers[i] +  ": Instructions -> " + ParameterHelp[i][j])
+                Parameter = input("Please Enter Parameter for: "+CurrentParameters[j]+ " -> ")
+                ParameterFile.write(Parameter+" ")
+                print("\n")
+            print("\n\n")
+            ParameterFile.write("\n")
+    ParameterFile.write("NumParts: \n")
+    ParameterFile.write("Epsilon: \n")
+    ParameterFile.write("Progress: \n")
+    ParameterFile.close()
 
+def ShowMenu():
+    ParameterFile = open("Parameter.txt", "r")
+    
+    Lines = ParameterFile.readlines()
+    #Script 1 -- USER CHOOSES TO RUN AS NOT A NECCESSARY SCRIPT --
+    #for j in GetDataSetNames():
+    #    if os.path("Research\Data\\"+j).index(j+"_lowess.txt") == -1:
+    #        Lines[1] = "[OUTPUT FILE MISSING]"+Lines[1]
+    #if param:
 
+    #Script 2  --> next(os.walk('./pythonTAaCGH'))[2] (Files but  1 is directories)
+    OutputFound = []
+    for i in next(os.walk('Research/Data'))[1]:
+        CurrentSubDirects = next(os.walk('Research/Data/'+i))[1]
+               
+        if('sect' in CurrentSubDirects):
+            CurrentFiles =  next(os.walk('Research/Data/'+i+'/sect'))[2]
+        elif('arms' in CurrentSubDirects):
+            CurrentFiles =  next(os.walk('Research/Data/'+i+'/arms'))[2]
+        else:
+            continue
+         
+        if ((i+'_sect_dict_cyto.txt') in CurrentFiles or (i+'_arms_dict_cyto.txt') in CurrentFiles ):
+            OutputFound.append(i)
+    if len(OutputFound) == 0:
+        Lines[2] = "[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[2]
+    else:
+        Lines[2] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[2]
+    
+    #Script 3  --> next(os.walk('./pythonTAaCGH'))[2] (Files but  1 is directories)
+    OutputFound = []
+    for i in next(os.walk('Research/Data'))[1]:
+        CurrentSubDirects = next(os.walk('Research/Data/'+i))[1]
+        CurrentFiles =  next(os.walk('Research/Data/'+i))[2]
+
+        if ((i+'_data.txt') in CurrentFiles):
+            OutputFound.append(i)
+    if len(OutputFound) == 0:
+        Lines[3] = "[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[3]
+    else:
+        Lines[3] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[3]
+    
+    #Script 3B  -->  next(os.walk('./pythonTAaCGH'))[2] (Files but  1 is directories)
+    # lines[0].split('\t')
+    OutputFound = []
+    for i in next(os.walk('Research/Data'))[1]:
+        CurrentSubDirects = next(os.walk('Research/Data/'+i))[1]
+               
+        if('sect' in CurrentSubDirects):
+            CurrentFiles =  next(os.walk('Research/Data/'+i+'/sect'))[2]
+            CytoFile = open("Research/Data/"+i+"/sect/"+i+"_sect_dict_cyto.txt","r")
+        elif('arms' in CurrentSubDirects):
+            CurrentFiles =  next(os.walk('Research/Data/'+i+'/arms'))[2]
+            CytoFile = open("Research/Data/"+i+"/arms/"+i+"_arms_dict_cyto.txt","r")
+        else:
+            continue
+         
+        if (((i+'_sect_dict_cyto.txt') in CurrentFiles or (i+'_arms_dict_cyto.txt') in CurrentFiles)):
+            lines = CytoFile.readlines()
+            if(len(lines[0].split('\t'))==14):
+                OutputFound.append(i)
+        CytoFile.close()
+
+    if len(OutputFound) == 0:
+        Lines[4] = "[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[4]
+    else:
+        Lines[4] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[4]
+    #Script 4 --> next(os.walk('./pythonTAaCGH'))[2] (Files but  1 is directories)
+    # ~/Research/Results/dataSet/action/2D/Homology/  (action: arms or sect)
+    # ~/Research/Results/SET/2D/Homology/
+    OutputFound = []
+    for i in next(os.walk('Research/Results'))[1]:
+        if(os.path.isdir('Research/Results/'+i+'/arms/2D/Homology') or os.path.isdir('Research/Results/'+i+'/sect/2D/Homology')):
+            if(os.path.isdir('Research/Results/'+i+'/2D/Homology')):
+                OutputFound.append('Results/'+i)
+            else:
+                continue
+        else:
+            continue
+             
+    if len(OutputFound) == 0:
+        Lines[5] = "[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[5]
+    else:
+        Lines[5] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[5]
+    #Script 5 --> next(os.walk('./pythonTAaCGH'))[2] (Files but  1 is directories)
+    # ~/Research/Results/SET/significance/pvals
+    OutputFound = []
+    for i in next(os.walk('Research/Results'))[1]:
+        if(os.path.isdir('Research/Results/'+i+'/significance/pvals')):
+            OutputFound.append('Result/'+i)
+        else:
+            continue
+             
+    if len(OutputFound) == 0:
+        Lines[6] = "[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[6]
+    else:
+        Lines[6] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[6]
+   #Script 6 --> next(os.walk('./pythonTAaCGH'))[2] (Files but  1 is directories)
+    OutputFound = []
+
+            
+    for i in Lines:
+        print(i)
+
+    
+
+    
 
     ParameterFile.close()
+
+def ParameterFileExists():
+    return os.path.exists("./Parameter.txt")
 
 ################################################ END UTILITIES #######################################################################
 
@@ -307,7 +433,7 @@ def RegularMode():
 
     if (not ParameterFileExists()):
         print("PLEASE RUN THE SETUP COMMAND BEFORE RUNNING SCRIPTS!")
-
+    # meant to be run outside (directly) Research folder
     #Example Script Call --> ScriptCalls["Script3B"]()
     while ( true ):
         ShowMenu() 
@@ -315,11 +441,10 @@ def RegularMode():
 
         TargetScript =  ReadScriptTarget() # Will have a make menu call and outputs the script user wants to run and has animation telling user what scripts they should run --> outputs tuple that tell us whether user is running or clear the effects of a script
         if(TargetScript[0] == 'Run'):
-            RunScript(TargetScript) # Error checking and script call --> call has saveprogress call when output is given
+            RunScript(TargetScript) # Error checking and script call
         elif (TargetScript[0] == 'Delete'):
             DeleteScript(TargetScript) # Delete trace of script
         elif( TargetScript[0] == 'Exit'):
-            SaveProgress()
             exit(0)
         else:
             print("INCORRECT COMMAND")
@@ -345,6 +470,7 @@ def Clear():
 
 #Setup()
 #RegularMode()
-Clear()
-
-
+#Clear()
+#SetupParameterFile() 
+#print(ParameterFileExists())
+ShowMenu()
