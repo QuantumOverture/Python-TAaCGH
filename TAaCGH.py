@@ -225,7 +225,7 @@ def SetupParameterFile():
     else:
         EditEnabled = False
     
-    for i in range(1,len(Line_Headers)-5):
+    for i in range(1,len(Line_Headers)-4):
         CurrentParameters = ParametersForEachScript[i].split(" ")
         ParameterFile.write(Line_Headers[i]+" ")
         if(EditEnabled):
@@ -236,6 +236,7 @@ def SetupParameterFile():
                 print("\n")
             print("\n\n")
             ParameterFile.write("\n")
+    ParameterFile.write("Script 10 and 11 require manual input\n")
     ParameterFile.write("NumParts: \n")
     ParameterFile.write("Epsilon: \n")
     ParameterFile.write("Progress: \n")
@@ -252,6 +253,7 @@ def ShowMenu():
     #if param:
 
     #Script 2  --> next(os.walk('./pythonTAaCGH'))[2] (Files but  1 is directories)
+    print(Lines)
     OutputFound = []
     for i in next(os.walk('Research/Data'))[1]:
         CurrentSubDirects = next(os.walk('Research/Data/'+i))[1]
@@ -340,7 +342,43 @@ def ShowMenu():
         Lines[6] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[6]
    #Script 6 --> next(os.walk('./pythonTAaCGH'))[2] (Files but  1 is directories)
     OutputFound = []
+    for i in next(os.walk('Research/Data'))[1]:
+        CurrentSubDirects = next(os.walk('Research/Data/'+i))[1]
+        for j in CurrentSubDirects:
+            if(os.path.isfile('Research/Data/'+i+'/'+j+'/'+i+'_FDR.txt') and os.path.isfile('Research/Data/'+i+'/'+j+'/'+i+'_FDRsigtxt') ):
+                    OutputFound.append(i+"/"+j)
 
+    if len(OutputFound) == 0:
+        Lines[7] = "[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[7]
+    else:
+        Lines[7] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[7]
+    #Script 7 --> next(os.walk('./pythonTAaCGH'))[2] (Files but  1 is directories)
+    OutputFound = []
+    for i in next(os.walk('Research/Results'))[1]:
+        CurrentSubDirects = next(os.walk('Research/Results/'+i))[1]
+        for j in CurrentSubDirects:
+            if(os.path.isdir('Research/Results/'+i+'/'+j+'/vis/curves/B0') or os.path.isdir('Research/Results/'+i+'/'+j+'/vis/curves/B1')):
+                OutputFound.append(i+"/"+j)
+
+    if len(OutputFound) == 0:
+        Lines[8] = "[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[8]
+    else:
+        Lines[8] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[8]
+   #Script 8 
+   OutputFound = []
+   for i in next(os.walk('Research/Results'))[1]:
+       #Results/SET/significance/pvals
+       if( os.path.isfile('Research/Results/'+i+'/significance/pvals/'+i+'_Probes_FDR.txt') and os.path.isfile('Research/Results/'+i+'/significance/pvals/'+i+'_Probes_FDRsig.txt')):
+           OutputFound.append(i+"/"+j)
+
+    if len(OutputFound) == 0:
+        Lines[9] = "[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[9]
+    else:
+        Lines[9] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[9]
+    #Script 9
+    OutputFound = []
+    # List files in ~/Reseach/Results/SET/CenterMass
+    
             
     for i in Lines:
         print(i)
@@ -455,7 +493,7 @@ def AutoMode():
         print("PLEASE RUN THE SETUP COMMAND BEFORE RUNNING SCRIPTS!")
 
 def Clear():
-    FinalCheck = MakeMenu(["Yes","No"],"Are you sure you want to delete the Research folder (and all its contents) and Parameter.txt?")
+ERBB2, basal, test, sim,    FinalCheck = MakeMenu(["Yes","No"],"Are you sure you want to delete the Research folder (and all its contents) and Parameter.txt?")
     if( FinalCheck == 1):
         print("Deletion Started")
         call('rm -r Research',shell=True)
