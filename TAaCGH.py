@@ -236,7 +236,8 @@ def SetupParameterFile():
                 print("\n")
             print("\n\n")
             ParameterFile.write("\n")
-    ParameterFile.write("Script 10 and 11 require manual input\n")
+    ParameterFile.write("10_class_pat_CM.R\n")
+    ParameterFile.write("11_class_pat_seg.R\n")
     ParameterFile.write("NumParts: \n")
     ParameterFile.write("Epsilon: \n")
     ParameterFile.write("Progress: \n")
@@ -247,13 +248,9 @@ def ShowMenu():
     
     Lines = ParameterFile.readlines()
     #Script 1 -- USER CHOOSES TO RUN AS NOT A NECCESSARY SCRIPT --
-    #for j in GetDataSetNames():
-    #    if os.path("Research\Data\\"+j).index(j+"_lowess.txt") == -1:
-    #        Lines[1] = "[OUTPUT FILE MISSING]"+Lines[1]
-    #if param:
 
     #Script 2  --> next(os.walk('./pythonTAaCGH'))[2] (Files but  1 is directories)
-    print(Lines)
+    
     OutputFound = []
     for i in next(os.walk('Research/Data'))[1]:
         CurrentSubDirects = next(os.walk('Research/Data/'+i))[1]
@@ -288,6 +285,7 @@ def ShowMenu():
     #Script 3B  -->  next(os.walk('./pythonTAaCGH'))[2] (Files but  1 is directories)
     # lines[0].split('\t')
     OutputFound = []
+    CurrentFiles = []
     for i in next(os.walk('Research/Data'))[1]:
         CurrentSubDirects = next(os.walk('Research/Data/'+i))[1]
                
@@ -313,9 +311,14 @@ def ShowMenu():
     #Script 4 --> next(os.walk('./pythonTAaCGH'))[2] (Files but  1 is directories)
     # ~/Research/Results/dataSet/action/2D/Homology/  (action: arms or sect)
     # ~/Research/Results/SET/2D/Homology/
+ #- alternatively you could check for some files like the first and last. For instance for B0:
+  #    B0_2D_horlings_sect_1p_seg1.txt
+   #   B0_2D_horlings_sect_23q_seg7.txt
+#   - there is also a file storing the epsilon used. If the user already ran the homology and the files are still there, you could provide the user with some feedback like "homology has been already ran for epsilon=0.03 for a dictionary splitting the dataset in 8 parts. Do you want to erase these files and run it again? " If they don't want to do that they could use a different subdir to save everything there and run the homology again with a different dictionary or a different epsilion. You could display a message like that after they press "no" as an answer
+
     OutputFound = []
     for i in next(os.walk('Research/Results'))[1]:
-        if(os.path.isdir('Research/Results/'+i+'/arms/2D/Homology') or os.path.isdir('Research/Results/'+i+'/sect/2D/Homology')):
+        if((os.path.isfile('Research/Results/'+i+'/arms/2D/Homology/B0_2D_'+i+'_arms_1p_seg1.txt') or os.path.isfile('Research/Results/'+i+'/sect/2D/Homology/B0_2D_'+i+'_sect_1p_seg1.txt'))  and  (os.path.isfile('Research/Results/'+i+'/arms/2D/Homology/B0_2D_'+i+'_arms_1p_seg'+str(len(CurrentFiles)-2)+'.txt') or os.path.isfile('Research/Results/'+i+'/sect/2D/Homology/B0_2D_'+i+'_sect_23q_seg'+str(len(CurrentFiles)-2)+'.txt')) ):
             if(os.path.isdir('Research/Results/'+i+'/2D/Homology')):
                 OutputFound.append('Results/'+i)
             else:
@@ -352,7 +355,7 @@ def ShowMenu():
         Lines[7] = "[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[7]
     else:
         Lines[7] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[7]
-    #Script 7 --> next(os.walk('./pythonTAaCGH'))[2] (Files but  1 is directories)
+   #Script 7 --> next(os.walk('./pythonTAaCGH'))[2] (Files but  1 is directories)
     OutputFound = []
     for i in next(os.walk('Research/Results'))[1]:
         CurrentSubDirects = next(os.walk('Research/Results/'+i))[1]
@@ -365,8 +368,8 @@ def ShowMenu():
     else:
         Lines[8] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[8]
    #Script 8 
-   OutputFound = []
-   for i in next(os.walk('Research/Results'))[1]:
+    OutputFound = []
+    for i in next(os.walk('Research/Results'))[1]:
        #Results/SET/significance/pvals
        if( os.path.isfile('Research/Results/'+i+'/significance/pvals/'+i+'_Probes_FDR.txt') and os.path.isfile('Research/Results/'+i+'/significance/pvals/'+i+'_Probes_FDRsig.txt')):
            OutputFound.append(i+"/"+j)
@@ -375,13 +378,48 @@ def ShowMenu():
         Lines[9] = "[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[9]
     else:
         Lines[9] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[9]
-    #Script 9
+   #Script 9
     OutputFound = []
-    # List files in ~/Reseach/Results/SET/CenterMass
+   # List files in ~/Reseach/Results/SET/CenterMass
+    for i in next(os.walk('Research/Results'))[1]:
+        if(os.path.isdir('Research/Results/'+i+'/CenterMass')):
+            OutputFound.append(os.walk('Research/Results/'+i+'/CenterMass')[2])
+    
+        if len(OutputFound) == 0:
+            Lines[10] = "[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[10]
+        else:
+            Lines[10] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[10]
+    OutputFound = []
+   # Script 10
+    for i in next(os.walk('Research/Results'))[1]:
+        if(os.path.isfile('Research/Data/'+i+'/'+i+'_phen.txt')):
+            PhenFile = open('Research/Data/'+i+'/'+i+'_phen.txt','r')
+            NumberOfCols = (PhenFile.readlines())[0].split('\t')
+            PhenFile.close()
+            if( len(NumberOfCols) == 16):
+                OutputFound.append(i)
+    
+        if len(OutputFound) == 0:
+            Lines[11] = "[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[11]
+        else:
+            Lines[11] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[11]
+   #Script 11
+    for i in next(os.walk('Research/Results'))[1]:
+       if(os.path.isfile('Research/Data/'+i+'/'+i+'_phen.txt')):
+           PhenFile = open('Research/Data/'+i+'/'+i+'_phen.txt','r') 
+           NumberOfCols = (PhenFile.readlines())[0].split('\t')
+           PhenFile.close()
+           if( len(NumberOfCols) == 17):
+               OutputFound.append(i)
+    
+       if len(OutputFound) == 0:
+           Lines[12] = "[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[12]
+       else:
+           Lines[12] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[12]
     
             
     for i in Lines:
-        print(i)
+      print(i)
 
     
 
@@ -493,7 +531,7 @@ def AutoMode():
         print("PLEASE RUN THE SETUP COMMAND BEFORE RUNNING SCRIPTS!")
 
 def Clear():
-ERBB2, basal, test, sim,    FinalCheck = MakeMenu(["Yes","No"],"Are you sure you want to delete the Research folder (and all its contents) and Parameter.txt?")
+    FinalCheck = MakeMenu(["Yes","No"],"Are you sure you want to delete the Research folder (and all its contents) and Parameter.txt?")
     if( FinalCheck == 1):
         print("Deletion Started")
         call('rm -r Research',shell=True)
