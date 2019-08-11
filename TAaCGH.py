@@ -19,21 +19,94 @@ def delete_lines(lines):
 
 
 ################################################ SCRIPTS ###########################################################################
-# Script Set : 1 
-def Script1():
-    call('ls',shell=True)
-    test = input("Enter a file name ")
-    call('cat '+test,shell=True)
-def ClearScript1():
-    pass
 
 # Script Set : 2 
-def Script2():
-    call('ls',shell=True)
-    test = input("Enter a file name ")
-    call('cat '+test,shell=True)
+def Script2(ParameterFileUse):
+    
+    if(ParameterFileUse == True):
+        ParameterFile = open("Parameter.txt","r")
+        Lines = ParameterFile.readlines()
+        ScriptParameters = Lines[2].split(" ") 
+        ParameterFile.close()
+        
+        call('R --vanilla --args '+ScriptParameters[1]+' '+ScriptParameters[2]+' '+ScriptParameters[3]+' '+ScriptParameters[4]+' '+ScriptParameters[5]+' < Research/TAaCGH/2_cgh_dictionary_cytoband.R',shell=True)
+        print("\n")
+        RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
+        if(RunAgain == 1):
+            Script2(ParameterFileUse)
+        else:
+            print("====================== COMPLETED SCRIPT 2 ======================")
+    else:
+        DataSet = ""
+        while(DataSet == "" or os.path.isdir('Research/Data/'+DataSet) == False):
+            print("Help: "+ParameterHelp[2][0])
+            print("Current Directories: "+str(next(os.walk("Research/Data"))[1]))
+            DataSet = input("Please enter a valid data set: ")
+            print(" ")
+        print("\n\n")
+
+        NumParts = ""
+        while( type(NumParts) is not int):
+            print("Help: "+ParameterHelp[2][1])
+            NumParts = input("Please enter an integer for the NumParts parameter: ")
+            try:
+                NumParts = int(NumParts)
+            except:
+                pass
+            print(" ")
+        ParameterFile = open("Parameter.txt","r+")
+        Lines = ParameterFile.readlines()
+        Lines[13] = Lines[13]+str(NumParts)
+        ParameterFile.writelines(Lines)
+        ParameterFile.close()
+        print("\n\n")
+
+        Action = ""
+        while(Action != "section" and Action !='arms'):
+            print("Help: "+ParameterHelp[2][4])
+            Action = input("Please enter either \"section\" or \"arms\" for the action parameter: ")
+            print(" ")
+        print("\n\n")
+
+        SegLength = ""
+        while(type(SegLength) is not int):
+            print("Help: "+ParameterHelp[2][3])
+            SegLength = input("Please enter an integer for the SegLength parameter: ")
+            try:
+                SegLength = int(SegLength)
+            except:
+                pass
+            print(" ")
+        print("\n\n")
+        
+        Subdir = input("Please enter the name for the subdir associated with this script(sect or arms or other): ")
+        print(" ")
+        print("\n\n")
+
+        call('cd Research/TAaCGH && R --vanilla --args '+DataSet+' '+str(NumParts)+' '+Action+' '+str(SegLength)+' '+Subdir+' < 2_cgh_dictionary_cytoband.R',shell=True)
+        print(' R --vanilla --args '+DataSet+' '+str(NumParts)+' '+Action+' '+str(SegLength)+' '+Subdir)
+        print("\n")
+        RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
+        if(RunAgain == 1):
+            Script2(ParameterFileUse)
+        else:
+            print("====================== COMPLETED SCRIPT 2 ======================")
+ 
 def ClearScript2():
-    pass
+    OutputFound = []
+    for i in next(os.walk('Research/Data'))[1]:
+        CurrentSubDirects = next(os.walk('Research/Data/'+i))[1]
+
+        for j in CurrentSubDirects:
+            if ((i+'_sect_dict_cyto.txt') in next(os.walk('Research/Data/'+i+'/'+j))[2] or (i+'_arms_dict_cyto.txt') in next(os.walk('Research/Data/'+i+'/'+j))[2]):
+                OutputFound.append(i+'/'+j)
+    print("Output of Script 2 found in the following Research/Data directories: "+str(OutputFound))
+    if(len(OutputFound)!=0):
+        DeleteThis = MakeMenu(OutputFound,"Choose one directory to delete:")
+        call("rm -r Research/Data/"+OutputFound[DeleteThis-1],shell=True)
+        
+    
+
 
 # Script Set : 3
 def Script3():
@@ -99,28 +172,12 @@ def Script9():
 def ClearScript9():
     pass
 
-# Script Set : 10 
-def Script10():
-    call('ls',shell=True)
-    test = input("Enter a file name ")
-    call('cat '+test,shell=True)
-def ClearScript10():
-    pass
-
-# Script Set : 11
-def Script11():
-    call('ls',shell=True)
-    test = input("Enter a file name ")
-    call('cat '+test,shell=True)
-def ClearScript11():
-    pass
 
 # use List Comprehension for Script calls
 
 
 
 ScriptCalls = {
-        "Script1":Script1,
         "Script2":Script2,
         "Script3":Script3,
         "Script3B":Script3B,
@@ -130,8 +187,6 @@ ScriptCalls = {
         "Script7":Script7,
         "Script8":Script8,
         "Script9":Script9,
-        "Script10":Script10,
-        "Script11":Script11
 } 
 
 
@@ -171,30 +226,6 @@ Line_Headers = [ "DO NOT USE THIS INDEX","1_impute_aCGH.R","2_cgh_dictionary_cyt
 
 
 ################################################ UTILITIES #######################################################################
-def ChooseSpecificScript():
-    for i in range(1,len(Line_Headers)):
-        print("Enter "+str(i)+" for: "+Line_Headers[i])
-
-    print("")
-    CurrentScript = input("Enter number corresponding to a script you want to run:")
-    try:
-        CurrentScript = int(CurrentScript)
-    except ValueError:
-        pass
-
-    while( (type(CurrentScript) is str) or (CurrentScript<1 or CurrentScript>14) ):
-        for i in range(1,len(Line_Headers)):
-            print("Enter "+str(i)+" for: "+Line_Headers[i])
-
-        print("")
-        CurrentScript = input("Enter a number(between 1 and 14 inclusive) corresponding you want to run: ")
-        try:
-            CurrentScript = int(CurrentScript)
-        except ValueError:
-            pass
-    ScriptNumber[CurrentScript]
-    return CurrentScript # For saving your phase progress 
-
 def MakeMenu(OptionList,Prompt):
     counter = 1
     for i in OptionList:
@@ -224,8 +255,8 @@ def SetupParameterFile():
         EditEnabled = True
     else:
         EditEnabled = False
-    
-    for i in range(1,len(Line_Headers)-4):
+    ParameterFile.write("Script 1 not part of suite\n")
+    for i in range(2,len(Line_Headers)-4):
         CurrentParameters = ParametersForEachScript[i].split(" ")
         ParameterFile.write(Line_Headers[i]+" ")
         if(EditEnabled):
@@ -255,15 +286,9 @@ def ShowMenu():
     for i in next(os.walk('Research/Data'))[1]:
         CurrentSubDirects = next(os.walk('Research/Data/'+i))[1]
                
-        if('sect' in CurrentSubDirects):
-            CurrentFiles =  next(os.walk('Research/Data/'+i+'/sect'))[2]
-        elif('arms' in CurrentSubDirects):
-            CurrentFiles =  next(os.walk('Research/Data/'+i+'/arms'))[2]
-        else:
-            continue
-         
-        if ((i+'_sect_dict_cyto.txt') in CurrentFiles or (i+'_arms_dict_cyto.txt') in CurrentFiles ):
-            OutputFound.append(i)
+        for j in CurrentSubDirects:
+            if ((i+'_sect_dict_cyto.txt') in next(os.walk('Research/Data/'+i+'/'+j))[2] or (i+'_arms_dict_cyto.txt') in next(os.walk('Research/Data/'+i+'/'+j))[2]):
+                OutputFound.append(i+'/'+j)
     if len(OutputFound) == 0:
         Lines[2] = "[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[2]
     else:
@@ -549,4 +574,6 @@ def Clear():
 #Clear()
 #SetupParameterFile() 
 #print(ParameterFileExists())
-ShowMenu()
+#ShowMenu()
+Script2(True)
+#ClearScript2()
