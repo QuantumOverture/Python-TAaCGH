@@ -22,14 +22,13 @@ def delete_lines(lines):
 
 # Script Set : 2 
 def Script2(ParameterFileUse):
-    
     if(ParameterFileUse == True):
         ParameterFile = open("Parameter.txt","r")
         Lines = ParameterFile.readlines()
         ScriptParameters = Lines[2].split(" ") 
         ParameterFile.close()
         
-        call('R --vanilla --args '+ScriptParameters[1]+' '+ScriptParameters[2]+' '+ScriptParameters[3]+' '+ScriptParameters[4]+' '+ScriptParameters[5]+' < Research/TAaCGH/2_cgh_dictionary_cytoband.R',shell=True)
+        call('(cd Research/TAaCGH && R --vanilla --args '+ScriptParameters[1]+' '+ScriptParameters[2]+' '+ScriptParameters[3]+' '+ScriptParameters[4]+' '+ScriptParameters[5]+' < Research/TAaCGH/2_cgh_dictionary_cytoband.R)',shell=True)
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
         if(RunAgain == 1):
@@ -56,7 +55,8 @@ def Script2(ParameterFileUse):
             print(" ")
         ParameterFile = open("Parameter.txt","r+")
         Lines = ParameterFile.readlines()
-        Lines[13] = Lines[13]+str(NumParts)
+        ParameterFile.truncate(0)
+        Lines[13] = Lines[13].replace('\n',"")+str(NumParts)+'\n'
         ParameterFile.writelines(Lines)
         ParameterFile.close()
         print("\n\n")
@@ -83,8 +83,7 @@ def Script2(ParameterFileUse):
         print(" ")
         print("\n\n")
 
-        call('cd Research/TAaCGH && R --vanilla --args '+DataSet+' '+str(NumParts)+' '+Action+' '+str(SegLength)+' '+Subdir+' < 2_cgh_dictionary_cytoband.R',shell=True)
-        print(' R --vanilla --args '+DataSet+' '+str(NumParts)+' '+Action+' '+str(SegLength)+' '+Subdir)
+        call('(cd Research/TAaCGH && R --vanilla --args '+DataSet+' '+str(NumParts)+' '+Action+' '+str(SegLength)+' '+Subdir+' < 2_cgh_dictionary_cytoband.R)',shell=True)
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
         if(RunAgain == 1):
@@ -109,23 +108,101 @@ def ClearScript2():
 
 
 # Script Set : 3
-def Script3():
-    call('ls',shell=True)
-    test = input("Enter a file name ")
-    call('cat '+test,shell=True)
+def Script3(ParameterFileUse):
+    if(ParameterFileUse == True):
+        ParameterFile = open("Parameter.txt","r")
+        Lines = ParameterFile.readlines()
+        ScriptParameters = Lines[3].split(" ") 
+        ParameterFile.close()
+        
+        call('(cd Research/TAaCGH && R --slave --args '+ScriptParameters[1]+'  < 3_Transposed_aCGH.R)',shell=True)
+        print("\n")
+        RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
+        if(RunAgain == 1):
+            Script3(ParameterFileUse)
+        else:
+            print("====================== COMPLETED SCRIPT 3 ======================")
+    else:
+        DataSet = ""
+        while(DataSet == "" or os.path.isdir('Research/Data/'+DataSet) == False):
+            print("Help: "+ParameterHelp[3][0])
+            print("Current Directories: "+str(next(os.walk("Research/Data"))[1]))
+            DataSet = input("Please enter a valid data set: ")
+            print(" ")
+        print("\n\n")
+        
+        call('(cd Research/TAaCGH && R --slave --args '+DataSet+'  < 3_Transposed_aCGH.R)',shell=True)
+        print("\n")
+        RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
+        if(RunAgain == 1):
+            Script3(ParameterFileUse)
+        else:
+            print("====================== COMPLETED SCRIPT 3 ======================")
+ 
+
 def ClearScript3():
-    pass
+    OutputFound = []
+    for i in next(os.walk('Research/Data'))[1]:
+        CurrentSubDirects = next(os.walk('Research/Data/'+i))[1]
+        CurrentFiles =  next(os.walk('Research/Data/'+i))[2]
+
+        if ((i+'_data.txt') in CurrentFiles):
+            OutputFound.append(i)
+    print("Output of Script 3 found in the following Research/Data directories: "+str(OutputFound))
+    if(len(OutputFound)!=0):
+        DeleteThis = MakeMenu(OutputFound,"Choose one directory to delete:")
+        call("rm  Research/Data/"+OutputFound[DeleteThis-1]+"/"+OutputFound[DeleteThis-1]+"_data.txt",shell=True)
+    
 
 # Script Set : 3B
 def Script3B():
-    call('ls',shell=True)
-    test = input("Enter a file name ")
-    call('cat '+test,shell=True)
+     if(ParameterFileUse == True):
+        ParameterFile = open("Parameter.txt","r")
+        Lines = ParameterFile.readlines()
+        ScriptParameters = Lines[4].split(" ") 
+        ParameterFile.close()
+        
+        call('(cd Research/TAaCGH && R --slave --args '+ScriptParameters[1]+' '+ScriptParameters[2]+' < 3b_dist_Q05.R)',shell=True)
+        print("\n")
+        RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
+        if(RunAgain == 1):
+            Script3B(ParameterFileUse)
+        else:
+            print("====================== COMPLETED SCRIPT 3B ======================")
+    else:
+        DataSet = ""
+        while(DataSet == "" or os.path.isdir('Research/Data/'+DataSet) == False):
+            print("Help: "+ParameterHelp[4][0])
+            print("Current Directories: "+str(next(os.walk("Research/Data"))[1]))
+            DataSet = input("Please enter a valid data set: ")
+            print(" ")
+        print("\n\n")
+        
+        Subdir = ""
+        while(Subdir == "" or os.path.isdir('Research/Data/'+DataSet+'/'+Subdir) == False):
+            print("Help: "+ParameterHelp[4][1])
+            print("Current Directories: "+str(next(os.walk("Research/Data/"+DataSet))[1]))
+            Subdir = input("Please enter a valid sub directory with the cyto dictonary files: ")
+            print(" ")
+        print("\n\n")
+        
+        call('(cd Research/TAaCGH && R --slave --args '+DataSet+' '+Subdir+' < 3b_dist_Q05.R)',shell=True)
+        print("\n")
+        
+        RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
+        if(RunAgain == 1):
+            Script3B(ParameterFileUse)
+        else:
+            #Compute Default Epsilon
+            print("====================== COMPLETED SCRIPT 3B ======================")
+ 
+
 def ClearScript3B():
     pass
 
 # Script Set : 4
 def Script4():
+    # USE POPEN IN SUBPROCESS!!! 
     call('ls',shell=True)
     test = input("Enter a file name ")
     call('cat '+test,shell=True)
@@ -575,5 +652,7 @@ def Clear():
 #SetupParameterFile() 
 #print(ParameterFileExists())
 #ShowMenu()
-Script2(True)
+Script2(False)
+#Script3(False)
 #ClearScript2()
+#ClearScript3()
