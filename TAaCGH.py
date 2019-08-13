@@ -267,9 +267,9 @@ def ClearScript3B():
         CytoFile = open(OutputFound[DeleteThis-1],"r+")
         Current_Lines = CytoFile.readlines()
         for i in range(0,len(Current_Lines)):
-            Current_Lines[i] = '\t'.join(Current_Lines[i].split('\t')[0:5])
+            Current_Lines[i] = '\t'.join(Current_Lines[i].split('\t')[0:7])+'\n'
         CytoFile.truncate(0)
-        CytoFile.writelines(Current_Lines[i])
+        CytoFile.writelines(Current_Lines)
         CytoFile.close()
 
 
@@ -722,7 +722,9 @@ def Clear():
 #SetupParameterFile() 
 #print(ParameterFileExists())
 #ShowMenu()
-#Script3B(False)
+#Script2(False)
 #Script3(False)
+#Script3B(False)
+#Script2(False)
 #ClearScript2()
 ClearScript3B()
