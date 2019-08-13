@@ -155,7 +155,7 @@ def ClearScript3():
     
 
 # Script Set : 3B
-def Script3B():
+def Script3B(ParameterFileUse):
      if(ParameterFileUse == True):
         ParameterFile = open("Parameter.txt","r")
         Lines = ParameterFile.readlines()
@@ -168,8 +168,32 @@ def Script3B():
         if(RunAgain == 1):
             Script3B(ParameterFileUse)
         else:
+            CytoFile = open("Research/Data/"+DataSet+"/"+Subdir+"/"+DataSet+"_"+Subdir+"_dict_cyto.txt","r")
+            CytoLines = CytoFile.readlines()
+            MinOfAvg05 = float("inf")
+            for i in range(0,len(CytoLines)):
+                if i == 0:
+                    continue
+                else:
+                    CytoLines[i] = CytoLines[i][:CytoLines[i].rindex('\t')] + CytoLines[i][CytoLines[i].rindex('\t')+1:] 
+                    CytoLines[i] = CytoLines[i][:CytoLines[i].rindex('\t')] +'|'+CytoLines[i][CytoLines[i].rindex('\t')+1:] 
+
+                    PossibleMin = float(CytoLines[i][CytoLines[i].rindex('\t')+1 : CytoLines[i].rindex('|')])
+                    if(PossibleMin < MinOfAvg05):
+                        MinOfAvg05 = PossibleMin 
+
+
+            CytoFile.close()    
+            
+            ParameterFile = open("Parameter.txt","r+")
+            Lines = ParameterFile.readlines()
+            ParameterFile.truncate(0)
+            Lines[14] = Lines[14].replace('\n',"")+str(MinOfAvg05)+'\n'
+            ParameterFile.writelines(Lines)
+            ParameterFile.close()
+                
             print("====================== COMPLETED SCRIPT 3B ======================")
-    else:
+     else:
         DataSet = ""
         while(DataSet == "" or os.path.isdir('Research/Data/'+DataSet) == False):
             print("Help: "+ParameterHelp[4][0])
@@ -193,12 +217,62 @@ def Script3B():
         if(RunAgain == 1):
             Script3B(ParameterFileUse)
         else:
-            #Compute Default Epsilon
+            CytoFile = open("Research/Data/"+DataSet+"/"+Subdir+"/"+DataSet+"_"+Subdir+"_dict_cyto.txt","r")
+            CytoLines = CytoFile.readlines()
+            MinOfAvg05 = float("inf")
+            for i in range(0,len(CytoLines)):
+                if i == 0:
+                    continue
+                else:
+                    CytoLines[i] = CytoLines[i][:CytoLines[i].rindex('\t')] + CytoLines[i][CytoLines[i].rindex('\t')+1:] 
+                    CytoLines[i] = CytoLines[i][:CytoLines[i].rindex('\t')] +'|'+CytoLines[i][CytoLines[i].rindex('\t')+1:] 
+
+                    PossibleMin = float(CytoLines[i][CytoLines[i].rindex('\t')+1 : CytoLines[i].rindex('|')])
+                    if(PossibleMin < MinOfAvg05):
+                        MinOfAvg05 = PossibleMin 
+
+
+            CytoFile.close()    
+            
+            ParameterFile = open("Parameter.txt","r+")
+            Lines = ParameterFile.readlines()
+            ParameterFile.truncate(0)
+            Lines[14] = Lines[14].replace('\n',"")+str(MinOfAvg05)+'\n'
+            ParameterFile.writelines(Lines)
+            ParameterFile.close()
+                   
+
             print("====================== COMPLETED SCRIPT 3B ======================")
  
 
 def ClearScript3B():
-    pass
+    OutputFound = []
+    CurrentFiles = []
+    for i in next(os.walk('Research/Data'))[1]:
+        CurrentSubDirects = next(os.walk('Research/Data/'+i))[1]
+        for j in CurrentSubDirects:      
+            print('Research/Data/'+i+'/'+j+'/'+i+'_'+j+'_dict_cyto.txt')
+            if( os.path.isfile('Research/Data/'+i+'/'+j+'/'+i+'_'+j+'_dict_cyto.txt')):
+                CytoFile = open('Research/Data/'+i+'/'+j+'/'+i+'_'+j+'_dict_cyto.txt',"r")
+                lines = CytoFile.readlines()
+                if(len(lines[0].split('\t'))==10):
+                    OutputFound.append('Research/Data/'+i+'/'+j+'/'+i+'_'+j+'_dict_cyto.txt')
+                CytoFile.close()
+            else:
+                continue
+         
+    print("Output of Script 3B found in the following files: "+str(OutputFound))
+    if len(OutputFound) != 0:
+        DeleteThis = MakeMenu(OutputFound,"Choose one directory to clear 3B output")
+        CytoFile = open(OutputFound[DeleteThis-1],"r+")
+        Current_Lines = CytoFile.readlines()
+        for i in range(0,len(Current_Lines)):
+            Current_Lines[i] = '\t'.join(Current_Lines[i].split('\t')[0:5])
+        CytoFile.truncate(0)
+        CytoFile.writelines(Current_Lines[i])
+        CytoFile.close()
+
+
 
 # Script Set : 4
 def Script4():
@@ -364,7 +438,7 @@ def ShowMenu():
         CurrentSubDirects = next(os.walk('Research/Data/'+i))[1]
                
         for j in CurrentSubDirects:
-            if ((i+'_sect_dict_cyto.txt') in next(os.walk('Research/Data/'+i+'/'+j))[2] or (i+'_arms_dict_cyto.txt') in next(os.walk('Research/Data/'+i+'/'+j))[2]):
+            if ((i+'_'+j+'_dict_cyto.txt') in next(os.walk('Research/Data/'+i+'/'+j))[2] or (i+'_'+j+'_dict_cyto.txt') in next(os.walk('Research/Data/'+i+'/'+j))[2]):
                 OutputFound.append(i+'/'+j)
     if len(OutputFound) == 0:
         Lines[2] = "[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[2]
@@ -390,21 +464,17 @@ def ShowMenu():
     CurrentFiles = []
     for i in next(os.walk('Research/Data'))[1]:
         CurrentSubDirects = next(os.walk('Research/Data/'+i))[1]
-               
-        if('sect' in CurrentSubDirects):
-            CurrentFiles =  next(os.walk('Research/Data/'+i+'/sect'))[2]
-            CytoFile = open("Research/Data/"+i+"/sect/"+i+"_sect_dict_cyto.txt","r")
-        elif('arms' in CurrentSubDirects):
-            CurrentFiles =  next(os.walk('Research/Data/'+i+'/arms'))[2]
-            CytoFile = open("Research/Data/"+i+"/arms/"+i+"_arms_dict_cyto.txt","r")
-        else:
-            continue
+        for j in CurrentSubDirects:      
+            print('Research/Data/'+i+'/'+j+'/'+i+'_'+j+'_dict_cyto.txt')
+            if( os.path.isfile('Research/Data/'+i+'/'+j+'/'+i+'_'+j+'_dict_cyto.txt')):
+                CytoFile = open('Research/Data/'+i+'/'+j+'/'+i+'_'+j+'_dict_cyto.txt',"r")
+                lines = CytoFile.readlines()
+                if(len(lines[0].split('\t'))==10):
+                    OutputFound.append(i+'/'+j)
+                CytoFile.close()
+            else:
+                continue
          
-        if (((i+'_sect_dict_cyto.txt') in CurrentFiles or (i+'_arms_dict_cyto.txt') in CurrentFiles)):
-            lines = CytoFile.readlines()
-            if(len(lines[0].split('\t'))==14):
-                OutputFound.append(i)
-        CytoFile.close()
 
     if len(OutputFound) == 0:
         Lines[4] = "[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[4]
@@ -652,7 +722,7 @@ def Clear():
 #SetupParameterFile() 
 #print(ParameterFileExists())
 #ShowMenu()
-Script2(False)
+#Script3B(False)
 #Script3(False)
 #ClearScript2()
-#ClearScript3()
+ClearScript3B()
