@@ -1,6 +1,7 @@
 ########################################## CORE ####################################################################################
 from subprocess import call
-import sys,readline,os
+from subprocess import Popen
+import sys,readline,os,time
 # adapted from https://github.com/recantha/EduKit3-RC-Keyboard/blob/master/rc_keyboard.py --> getch() function only
 
 
@@ -53,18 +54,13 @@ def Script2(ParameterFileUse):
             except:
                 pass
             print(" ")
-        ParameterFile = open("Parameter.txt","r+")
-        Lines = ParameterFile.readlines()
-        ParameterFile.truncate(0)
-        Lines[13] = Lines[13].replace('\n',"")+str(NumParts)+'\n'
-        ParameterFile.writelines(Lines)
-        ParameterFile.close()
+        SetNumParts(NumParts)
         print("\n\n")
 
         Action = ""
-        while(Action != "section" and Action !='arms'):
+        while(Action != "sections" and Action !='arms'):
             print("Help: "+ParameterHelp[2][4])
-            Action = input("Please enter either \"section\" or \"arms\" for the action parameter: ")
+            Action = input("Please enter either \"sections\" or \"arms\" for the action parameter: ")
             print(" ")
         print("\n\n")
 
@@ -184,13 +180,7 @@ def Script3B(ParameterFileUse):
 
 
             CytoFile.close()    
-            
-            ParameterFile = open("Parameter.txt","r+")
-            Lines = ParameterFile.readlines()
-            ParameterFile.truncate(0)
-            Lines[14] = Lines[14].replace('\n',"")+str(MinOfAvg05)+'\n'
-            ParameterFile.writelines(Lines)
-            ParameterFile.close()
+            SetEpsilon(MinOfAvg05)
                 
             print("====================== COMPLETED SCRIPT 3B ======================")
      else:
@@ -233,14 +223,7 @@ def Script3B(ParameterFileUse):
 
 
             CytoFile.close()    
-            
-            ParameterFile = open("Parameter.txt","r+")
-            Lines = ParameterFile.readlines()
-            ParameterFile.truncate(0)
-            Lines[14] = Lines[14].replace('\n',"")+str(MinOfAvg05)+'\n'
-            ParameterFile.writelines(Lines)
-            ParameterFile.close()
-                   
+            SetEpsilon(MinOfAvg05)
 
             print("====================== COMPLETED SCRIPT 3B ======================")
  
@@ -275,11 +258,116 @@ def ClearScript3B():
 
 
 # Script Set : 4
-def Script4():
-    # USE POPEN IN SUBPROCESS!!! 
-    call('ls',shell=True)
-    test = input("Enter a file name ")
-    call('cat '+test,shell=True)
+def Script4(ParameterFileUse):
+    # USE POPEN IN SUBPROCESS!!!
+    if(ParameterFileUse == True):
+        ParameterFile = open("Parameter.txt","r")
+        Lines = ParameterFile.readlines()
+        ScriptParameters = Lines[5].split(" ") 
+        ParameterFile.close()
+        
+        call('(cd Research/TAaCGH && R --vanilla --args '+ScriptParameters[1]+' '+ScriptParameters[2]+' '+ScriptParameters[3]+' '+ScriptParameters[4]+' '+ScriptParameters[5]+' < Research/TAaCGH/2_cgh_dictionary_cytoband.R)',shell=True)
+        print("\n")
+        RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
+        if(RunAgain == 1):
+            Script2(ParameterFileUse)
+        else:
+            print("====================== COMPLETED SCRIPT 4 ======================")
+    else:
+        DataSet = ""
+        while(DataSet == "" or os.path.isdir('Research/Data/'+DataSet) == False):
+            print("Help: "+ParameterHelp[5][0])
+            print("Current Directories: "+str(next(os.walk("Research/Data"))[1]))
+            DataSet = input("Please enter a valid data set: ")
+            print(" ")
+        print("\n\n")
+
+
+        HomDim = ""
+        while(HomDim != 1 and HomDim!=2):
+            print("Help: "+ParameterHelp[5][1])
+            HomDim = input("Please enter a valid integer[1 or 2]: ")
+            print(" ")
+            try:
+                HomDim = int(HomDim)
+            except:
+                pass
+        print("\n\n")
+
+        NumParts = ""
+        ParameterFile = open("Parameter.txt","r")
+        Lines = ParameterFile.readlines()
+        ParameterFile.close()
+        SkipStep = False
+        if(len(Lines[12].split(" ")) == 2):
+            print("Number of Parts is set to: "+str(Lines[12].split(" ")[1]))
+            Option = MakeMenu(["Yes","No"],"Would you like to use this value[HIGHLY RECOMMENDED]?")
+            if(Option == 1):
+                NumParts = int(Lines[12].split(" ")[1].replace("\n",""))
+                SkipStep = True
+        
+        if(SkipStep == False):
+            while( type(NumParts) is not int):
+                print("Help: "+ParameterHelp[5][2])
+                NumParts = input("Please enter an integer for the NumParts parameter: ")
+                try:
+                    NumParts = int(NumParts)
+                except:
+                    pass
+            print(" ")
+            SetNumParts(NumParts)	
+        print("\n\n")
+
+        Epsilon = ""
+        ParameterFile = open("Parameter.txt","r")
+        Lines = ParameterFile.readlines()
+        ParameterFile.close()
+        SkipStep = False
+        if(len(Lines[13].split(" ")) == 2):
+            print("Epsilon is set to: "+str(Lines[13].split(" ")[1]))
+            Option = MakeMenu(["Yes","No"],"Would you like to use this value[HIGHLY RECOMMENDED]?")
+            if(Option == 1):
+                Epsilon = float(Lines[13].split(" ")[1].replace("\n",""))
+                SkipStep = True
+        
+        if(SkipStep == False):
+            while( type(Epsilon) is not float):
+                print("Help: "+ParameterHelp[5][3])
+                Epsilon = input("Please enter an floating point for the Epsilon parameter: ")
+                try:
+                    Epsilon = float(Epsilon)
+                except:
+                    pass
+            print(" ")
+            SetEpsilon(Epsilon)
+        print("\n\n")
+
+
+        Action = ""
+        while(Action != "sect" and Action !='arms'):
+            print("Help: "+ParameterHelp[5][4])
+            Action = input("Please enter either \"sect\" or \"arms\" for the action parameter: ")
+            print(" ")
+        print("\n\n")
+
+        start = time.time()
+        ScriptCalls = []
+        for i in range(1,3 ):
+            ScriptCalls.append(Popen(['python','4_hom_stats_parts.py',DataSet,str(HomDim),str(i),str(round(Epsilon,2)),Action],cwd='Research/TAaCGH',shell=False))
+	
+        for j in ScriptCalls:
+            j.wait()
+        end = time.time()
+        print("*"*100)
+        print(str(end-start))
+        print("\n")
+        RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
+        if(RunAgain == 1):
+            Script4(ParameterFileUse)
+        else:
+            print("====================== COMPLETED SCRIPT 4 ======================")
+ 
+
 def ClearScript4():
     pass
 
@@ -602,6 +690,26 @@ def ShowMenu():
 def ParameterFileExists():
     return os.path.exists("./Parameter.txt")
 
+
+def SetNumParts(NewNum):
+    ParameterFile = open("Parameter.txt","r+")
+    Lines = ParameterFile.readlines()
+    ParameterFile.truncate(0)
+    Lines[12] = "NumParts: " + str(NewNum)+'\n'
+    ParameterFile.writelines(Lines)
+    ParameterFile.close()
+
+def SetEpsilon(NewNum):
+    ParameterFile = open("Parameter.txt","r+")
+    Lines = ParameterFile.readlines()
+    ParameterFile.truncate(0)
+    Lines[13] = "Epsilon: " + str(NewNum)+'\n'
+    ParameterFile.writelines(Lines)
+    ParameterFile.close()
+
+
+
+
 ################################################ END UTILITIES #######################################################################
 
 ########################################## MODES ####################################################################################
@@ -723,8 +831,13 @@ def Clear():
 #print(ParameterFileExists())
 #ShowMenu()
 #Script2(False)
+#call('cat Parameter.txt',shell=True)
 #Script3(False)
+#call('cat Parameter.txt',shell=True)
 #Script3B(False)
+#call('cat Parameter.txt',shell=True)
+
 #Script2(False)
 #ClearScript2()
-ClearScript3B()
+#ClearScript3B()
+Script4(False)
