@@ -1,7 +1,7 @@
 ########################################## CORE ####################################################################################
 from subprocess import call
 from subprocess import Popen
-import sys,readline,os,time
+import sys,readline,os
 # adapted from https://github.com/recantha/EduKit3-RC-Keyboard/blob/master/rc_keyboard.py --> getch() function only
 
 
@@ -738,16 +738,25 @@ def ShowMenu():
     ParameterFile = open("Parameter.txt", "r")
     Lines = ParameterFile.readlines()
     #Script 1 -- USER CHOOSES TO RUN AS NOT A NECCESSARY SCRIPT --
+    
+    # Core Data Below --> For performance
     CytoFileHeaders = GetCytoFileStartAndEnd() # Format [ [dataset/sect_or_arms_etc.,start,end,Number of header lines],...   ]
+    DataSets = next(os.walk('Research/Data'))[1]
+    SubDirects = [] # DataSet index correspondes to its subdirectory in subdirects list
+    CurrentFiles = [] # DataSet index correspondes to files in main data set folder
+    CurrentResults = next(os.walk('Research/Results'))[1]
+    for i in DataSets:
+        SubDirects.append(next(os.walk('Research/Data/'+i))[1])
+        CurrentFiles.append(next(os.walk('Research/Data/'+i))[2])
+
 
     #Script 2  --> next(os.walk('./pythonTAaCGH'))[2] (Files but  1 is directories)
     OutputFound = []
-    for i in next(os.walk('Research/Data'))[1]:
-        CurrentSubDirects = next(os.walk('Research/Data/'+i))[1]
+    for i in range(0,len(DataSets)):
               # "Chrom"  "Arm"  "Beg"  "End"  "Length"  "Segment"  
-        for j in CurrentSubDirects:
-            if ((i+'_'+j+'_dict_cyto.txt') in next(os.walk('Research/Data/'+i+'/'+j))[2]):
-                OutputFound.append(i+'/'+j)
+        for j in SubDirects[i]:
+            if ((DataSets[i]+'_'+j+'_dict_cyto.txt') in next(os.walk('Research/Data/'+DataSets[i]+'/'+j))[2]):
+                OutputFound.append(DataSets[i]+'/'+j)
     if len(OutputFound) == 0:
         Lines[1] = "[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[1]
     else:
@@ -755,11 +764,9 @@ def ShowMenu():
     
     #Script 3  --> next(os.walk('./pythonTAaCGH'))[2] (Files but  1 is directories)
     OutputFound = []
-    for i in next(os.walk('Research/Data'))[1]:
-        CurrentFiles =  next(os.walk('Research/Data/'+i))[2]
-
-        if ((i+'_data.txt') in CurrentFiles):
-            OutputFound.append(i)
+    for i in range(0,len(DataSets)):
+        if ((DataSets[i]+'_data.txt') in CurrentFiles[i]):
+            OutputFound.append(DataSets[i])
     if len(OutputFound) == 0:
         Lines[2] = "[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[2]
     else:
@@ -777,7 +784,8 @@ def ShowMenu():
     else:
         Lines[3] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[3] 
     #Script 4 --> next(os.walk('./pythonTAaCGH'))[2] (Files but  1 is directories)
-    # Research/Results/horlings/sect/2D/Homology/ B0_2D_horlings_sect_2p_seg2.txt   
+    # Research/Results/horlings/sect/2D/Homology/ B0_2D_horlings_sect_2p_seg2.txt 
+    OutputFound = []
     for i in CytoFileHeaders:
         StartPart = i[1].replace("\"","").split(",")
         EndPart = i[2].replace("\"","").split(",")
@@ -795,7 +803,7 @@ def ShowMenu():
     #Script 5 --> next(os.walk('./pythonTAaCGH'))[2] (Files but  1 is directories)
     # ~/Research/Results/SET/significance/pvals
     OutputFound = []
-    for i in next(os.walk('Research/Results'))[1]:
+    for i in CurrentResults:
         if(os.path.isdir('Research/Results/'+i+'/significance/pvals')):
             OutputFound.append('Result/'+i)
         else:
@@ -807,11 +815,10 @@ def ShowMenu():
         Lines[5] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[5]
    #Script 6 --> next(os.walk('./pythonTAaCGH'))[2] (Files but  1 is directories)
     OutputFound = []
-    for i in next(os.walk('Research/Data'))[1]:
-        CurrentSubDirects = next(os.walk('Research/Data/'+i))[1]
-        for j in CurrentSubDirects:
-            if(os.path.isfile('Research/Data/'+i+'/'+j+'/'+i+'_FDR.txt') and os.path.isfile('Research/Data/'+i+'/'+j+'/'+i+'_FDRsigtxt') ):
-                    OutputFound.append(i+"/"+j)
+    for i in range(0,len(DataSets)):
+        for j in SubDirects[i]:
+            if(os.path.isfile('Research/Data/'+DataSets[i]+'/'+j+'/'+DataSets[i]+'_FDR.txt') and os.path.isfile('Research/Data/'+DataSets[i]+'/'+j+'/'+DataSets[i]+'_FDRsigtxt') ):
+                    OutputFound.append(DataSets[i]+"/"+j)
 
     if len(OutputFound) == 0:
         Lines[6] = "[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[6]
@@ -819,7 +826,7 @@ def ShowMenu():
         Lines[6] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[6]
    #Script 7 --> next(os.walk('./pythonTAaCGH'))[2] (Files but  1 is directories)
     OutputFound = []
-    for i in next(os.walk('Research/Results'))[1]:
+    for i in CurrentResults:
         CurrentSubDirects = next(os.walk('Research/Results/'+i))[1]
         for j in CurrentSubDirects:
             if(os.path.isdir('Research/Results/'+i+'/'+j+'/vis/curves/B0') or os.path.isdir('Research/Results/'+i+'/'+j+'/vis/curves/B1')):
@@ -831,7 +838,7 @@ def ShowMenu():
         Lines[7] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[7]
    #Script 8 
     OutputFound = []
-    for i in next(os.walk('Research/Results'))[1]:
+    for i in CurrentResults:
        #Results/SET/significance/pvals
        if( os.path.isfile('Research/Results/'+i+'/significance/pvals/'+i+'_Probes_FDR.txt') and os.path.isfile('Research/Results/'+i+'/significance/pvals/'+i+'_Probes_FDRsig.txt')):
            OutputFound.append(i+"/"+j)
@@ -843,7 +850,7 @@ def ShowMenu():
    #Script 9
     OutputFound = []
    # List files in ~/Reseach/Results/SET/CenterMass
-    for i in next(os.walk('Research/Results'))[1]:
+    for i in CurrentResults:
         if(os.path.isdir('Research/Results/'+i+'/CenterMass')):
             OutputFound.append(os.walk('Research/Results/'+i+'/CenterMass')[2])
     
@@ -853,12 +860,12 @@ def ShowMenu():
             Lines[9] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[9]
     OutputFound = []
    # Script 10
-    for i in next(os.walk('Research/Results'))[1]:
+    for i in CurrentResults:
         if(os.path.isfile('Research/Data/'+i+'/'+i+'_phen.txt')):
             PhenFile = open('Research/Data/'+i+'/'+i+'_phen.txt','r')
-            NumberOfCols = (PhenFile.readlines())[0].split('\t')
+            NumberOfCols = (PhenFile.readlines())[0].count('\t')+1
             PhenFile.close()
-            if( len(NumberOfCols) == 16):
+            if( NumberOfCols == 16):
                 OutputFound.append(i)
     
         if len(OutputFound) == 0:
@@ -866,12 +873,13 @@ def ShowMenu():
         else:
             Lines[10] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[10]
    #Script 11
-    for i in next(os.walk('Research/Results'))[1]:
+    OuputFound = []
+    for i in CurrentResults:
        if(os.path.isfile('Research/Data/'+i+'/'+i+'_phen.txt')):
            PhenFile = open('Research/Data/'+i+'/'+i+'_phen.txt','r') 
-           NumberOfCols = (PhenFile.readlines())[0].split('\t')
+           NumberOfCols = (PhenFile.readlines())[0].count('\t')+1
            PhenFile.close()
-           if( len(NumberOfCols) == 17):
+           if( NumberOfCols == 17):
                OutputFound.append(i)
     
        if len(OutputFound) == 0:
@@ -1042,10 +1050,7 @@ def Clear():
 #Clear()
 #SetupParameterFile() 
 #print(ParameterFileExists())
-start = time.time()
 ShowMenu()
-end = time.time()
-print(end-start)
 #Script2(False)
 #call('cat Parameter.txt',shell=True)
 #Script3(False)
