@@ -258,19 +258,35 @@ def ClearScript3B():
 
 
 # Script Set : 4
-def Script4(ParameterFileUse):
+def Script4(ParameterFileUse,UseDefaultEpsilon):
     # USE POPEN IN SUBPROCESS!!!
     if(ParameterFileUse == True):
         ParameterFile = open("Parameter.txt","r")
         Lines = ParameterFile.readlines()
         ScriptParameters = Lines[5].split(" ") 
         ParameterFile.close()
+        Epsilon = ""
+        if(not UseDefaultEpsilon):
+             while( type(Epsilon) is not float):
+                print("Help: "+ParameterHelp[5][3])
+                Epsilon = input("Please enter an floating point for the Epsilon parameter: ")
+                try:
+                    Epsilon = float(Epsilon)
+                except:
+                    pass
+        else:
+            Epsilon = ScriptParameter[3]
+        ScriptCalls = []
+        for i in range(1,int(ScriptParameter[2])+1 ):
+            ScriptCalls.append(Popen(['python','4_hom_stats_parts.py',ScriptParameter[0],ScriptParameter[1],str(i),str(Epsilon),ScriptParameter[4],],cwd='Research/TAaCGH',shell=False))
+	
+        for j in ScriptCalls:
+            j.wait()
         
-        call('(cd Research/TAaCGH && R --vanilla --args '+ScriptParameters[1]+' '+ScriptParameters[2]+' '+ScriptParameters[3]+' '+ScriptParameters[4]+' '+ScriptParameters[5]+' < Research/TAaCGH/2_cgh_dictionary_cytoband.R)',shell=True)
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
         if(RunAgain == 1):
-            Script2(ParameterFileUse)
+            Script4(ParameterFileUse)
         else:
             print("====================== COMPLETED SCRIPT 4 ======================")
     else:
@@ -350,16 +366,13 @@ def Script4(ParameterFileUse):
             print(" ")
         print("\n\n")
 
-        start = time.time()
         ScriptCalls = []
-        for i in range(1,3 ):
+        for i in range(1,NumParts+1 ):
             ScriptCalls.append(Popen(['python','4_hom_stats_parts.py',DataSet,str(HomDim),str(i),str(round(Epsilon,2)),Action],cwd='Research/TAaCGH',shell=False))
 	
         for j in ScriptCalls:
             j.wait()
-        end = time.time()
-        print("*"*100)
-        print(str(end-start))
+        
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
         if(RunAgain == 1):
@@ -371,19 +384,227 @@ def Script4(ParameterFileUse):
 def ClearScript4():
     pass
 
+
+
 # Script Set : 5
-def Script5():
-    call('ls',shell=True)
-    test = input("Enter a file name ")
-    call('cat '+test,shell=True)
+def Script5(ParameterFileUse):
+      if(ParameterFileUse == True):
+        ParameterFile = open("Parameter.txt","r")
+        Lines = ParameterFile.readlines()
+        ScriptParameters = Lines[6].split(" ") 
+        ParameterFile.close()
+        
+        ScriptCalls = []
+        for i in range(1,int(ScriptParameters[3])+1):
+            ScriptCalls.append(Popen(['R','--vanilla',"--args",ScriptParameters[0], ScriptParameters[1] ,ScriptParameters[2] ,str(i),ScriptParameters[4] ,ScriptParameters[5] ,ScriptParameters[6], "<","5_sig_pcalc_parts.R"],cwd='Research/TAaCGH',shell=False))
+	
+        for j in ScriptCalls:
+            j.wait()
+        
+        print("\n")
+        RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
+        if(RunAgain == 1):
+            Script5(ParameterFileUse)
+        else:
+            print("====================== COMPLETED SCRIPT 5 ======================")
+      else:
+        Param = ""
+        while(Param == ""):
+            print("Help: "+ParameterHelp[6][0])
+            Param = input("Please enter a valid param: ")
+            print(" ")
+        print("\n\n")
+
+
+        Phenotype = ""
+        while(Phenotype == ""):
+            print("Help: "+ParameterHelp[6][1])
+            HomDim = input("Please enter a valid phenotype: ")
+            print(" ")
+        print("\n\n")
+
+        DataSet = ""
+        while(DataSet == "" or os.path.isdir('Research/Data/'+DataSet) == False):
+            print("Help: "+ParameterHelp[5][0])
+            print("Current Directories: "+str(next(os.walk("Research/Data"))[1]))
+            DataSet = input("Please enter a valid data set: ")
+            print(" ")
+        print("\n\n") 
+        
+        NumParts = ""
+        ParameterFile = open("Parameter.txt","r")
+        Lines = ParameterFile.readlines()
+        ParameterFile.close()
+        SkipStep = False
+        if(len(Lines[12].split(" ")) == 2):
+            print("Number of Parts is set to: "+str(Lines[12].split(" ")[1]))
+            Option = MakeMenu(["Yes","No"],"Would you like to use this value[HIGHLY RECOMMENDED]?")
+            if(Option == 1):
+                NumParts = int(Lines[12].split(" ")[1].replace("\n",""))
+                SkipStep = True
+        
+        if(SkipStep == False):
+            while( type(NumParts) is not int):
+                print("Help: "+ParameterHelp[5][2])
+                NumParts = input("Please enter an integer for the NumParts parameter: ")
+                try:
+                    NumParts = int(NumParts)
+                except:
+                    pass
+            print(" ")
+            SetNumParts(NumParts)	
+        print("\n\n")
+
+        Action = ""
+        while(Action != "sect" and Action !='arms'):
+            print("Help: "+ParameterHelp[5][4])
+            Action = input("Please enter either \"sect\" or \"arms\" for the action parameter: ")
+            print(" ")
+        print("\n\n")
+        
+        Outlier = ""
+        while(Outlier == ""):
+            print("Help: "+ParameterHelp[5][5])
+            Outlier = input("Please enter a valid data set: ")
+            print(" ")
+        print("\n\n") 
+
+        Subdir = ""
+        while(Subdir == "" or os.path.isdir('Research/Data/'+DataSet) == False):
+            print("Help: "+ParameterHelp[5][6])
+            Subdir = input("Please enter a valid subdir: ")
+            print(" ")
+        print("\n\n") 
+        
+        ScriptCalls = []
+        for i in range(1,NumParts+1 ):
+            ScriptCalls.append(Popen(['R','--vanilla',"--args",Param,Phenotype,DataSet,str(i),Action,Outlier,Subdir,"<","5_sig_pcalc_parts.R"],cwd='Research/TAaCGH',shell=False))
+	
+        for j in ScriptCalls:
+            j.wait()
+        
+        print("\n")
+        RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
+        if(RunAgain == 1):
+            Script5(ParameterFileUse)
+        else:
+            print("====================== COMPLETED SCRIPT 5 ======================")
+ 
+        
 def ClearScript5():
-    pass
+    OutputFound = []
+    for i in next(os.walk('Research/Results'))[1]:
+        if(os.path.isdir('Research/Results/'+i+'/significance/pvals')):
+            OutputFound.append('Research/Results/'+i+'/significance/pvals')
+        else:
+            continue
+             
+    print("Output of Script 5 found in the following Research/Data directories: "+str(OutputFound))
+    if(len(OutputFound)!=0):
+        DeleteThis = MakeMenu(OutputFound,"Choose one directory to delete:")
+        call("rm  -r "+ OutputFound[DeleteThis-1],shell=True)
+    
 
 # Script Set : 6
 def Script6():
-    call('ls',shell=True)
-    test = input("Enter a file name ")
-    call('cat '+test,shell=True)
+   if(ParameterFileUse == True):
+        ParameterFile = open("Parameter.txt","r")
+        Lines = ParameterFile.readlines()
+        ScriptParameters = Lines[7].split(" ") 
+        ParameterFile.close()
+        
+        ScriptCalls = []
+        for i in range(1,int(ScriptParameters[3])+1  ):
+            ScriptCalls.append(Popen(['R','--vanilla',"--args",ScriptParameters[0], ScriptParameters[1] ,ScriptParameters[2] ,str(i),ScriptParameters[4] ,ScriptParameters[5] ,ScriptParameters[6], "<","5_sig_pcalc_parts.R"],cwd='Research/TAaCGH',shell=False))
+	
+        for j in ScriptCalls:
+            j.wait()
+        
+        print("\n")
+        RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
+        if(RunAgain == 1):
+            Script5(ParameterFileUse)
+        else:
+            print("====================== COMPLETED SCRIPT 6 ======================")
+   else:
+        File = ""
+        while(File == ""):
+            print("Help: "+ParameterHelp[7][0])
+            File = input("Please enter a valid file: ")
+            print(" ")
+        print("\n\n")
+
+
+        Parameter = ""
+        while(Parameter == ""):
+            print("Help: "+ParameterHelp[7][1])
+            Parameter = input("Please enter a valid parameter: ")
+            print(" ")
+        print("\n\n")
+
+        Phenotype = ""
+        while(Phenotype == ""):
+            print("Help: "+ParameterHelp[7][2])
+            Phenotype = input("Please enter a valid phenotype: ")
+            print(" ")
+        print("\n\n") 
+        
+        NumParts = ""
+        ParameterFile = open("Parameter.txt","r")
+        Lines = ParameterFile.readlines()
+        ParameterFile.close()
+        SkipStep = False
+        if(len(Lines[12].split(" ")) == 2):
+            print("Number of Parts is set to: "+str(Lines[12].split(" ")[1]))
+            Option = MakeMenu(["Yes","No"],"Would you like to use this value[HIGHLY RECOMMENDED]?")
+            if(Option == 1):
+                NumParts = int(Lines[12].split(" ")[1].replace("\n",""))
+                SkipStep = True
+        
+        if(SkipStep == False):
+            while( type(NumParts) is not int):
+                print("Help: "+ParameterHelp[5][2])
+                NumParts = input("Please enter an integer for the NumParts parameter: ")
+                try:
+                    NumParts = int(NumParts)
+                except:
+                    pass
+            print(" ")
+            SetNumParts(NumParts)	
+        print("\n\n")
+
+        Perm = ""
+        while(Perm == ""):
+            print("Help: "+ParameterHelp[7][4])
+            Perm = input("Please enter a valid perm: ")
+            print(" ")
+        print("\n\n")
+        
+        Sig = ""
+        while(Sig == ""):
+            print("Help: "+ParameterHelp[7][5])
+            Sig = input("Please enter a valid data set: ")
+            print(" ")
+        print("\n\n") 
+
+        Subdir = ""
+        while(Subdir == "" or os.path.isdir('Research/Data/'+DataSet) == False):
+            print("Help: "+ParameterHelp[7][6])
+            Subdir = input("Please enter a valid subdir: ")
+            print(" ")
+        print("\n\n") 
+        
+        Popen(['R','--vanilla',"--args",Param,Phenotype,DataSet,str(i),Action,Outlier,Subdir,"<","5_sig_pcalc_parts.R"])
+	
+        
+        print("\n")
+        RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
+        if(RunAgain == 1):
+            Script5(ParameterFileUse)
+        else:
+            print("====================== COMPLETED SCRIPT 5 ======================")
+ 
+
 def ClearScript6():
     pass
 
@@ -515,81 +736,62 @@ def SetupParameterFile():
 
 def ShowMenu():
     ParameterFile = open("Parameter.txt", "r")
-    
     Lines = ParameterFile.readlines()
     #Script 1 -- USER CHOOSES TO RUN AS NOT A NECCESSARY SCRIPT --
+    CytoFileHeaders = GetCytoFileStartAndEnd() # Format [ [dataset/sect_or_arms_etc.,start,end,Number of header lines],...   ]
 
     #Script 2  --> next(os.walk('./pythonTAaCGH'))[2] (Files but  1 is directories)
-    
     OutputFound = []
     for i in next(os.walk('Research/Data'))[1]:
         CurrentSubDirects = next(os.walk('Research/Data/'+i))[1]
-               
+              # "Chrom"  "Arm"  "Beg"  "End"  "Length"  "Segment"  
         for j in CurrentSubDirects:
-            if ((i+'_'+j+'_dict_cyto.txt') in next(os.walk('Research/Data/'+i+'/'+j))[2] or (i+'_'+j+'_dict_cyto.txt') in next(os.walk('Research/Data/'+i+'/'+j))[2]):
+            if ((i+'_'+j+'_dict_cyto.txt') in next(os.walk('Research/Data/'+i+'/'+j))[2]):
                 OutputFound.append(i+'/'+j)
     if len(OutputFound) == 0:
-        Lines[2] = "[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[2]
+        Lines[1] = "[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[1]
     else:
-        Lines[2] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[2]
+        Lines[1] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[1]
     
     #Script 3  --> next(os.walk('./pythonTAaCGH'))[2] (Files but  1 is directories)
     OutputFound = []
     for i in next(os.walk('Research/Data'))[1]:
-        CurrentSubDirects = next(os.walk('Research/Data/'+i))[1]
         CurrentFiles =  next(os.walk('Research/Data/'+i))[2]
 
         if ((i+'_data.txt') in CurrentFiles):
             OutputFound.append(i)
     if len(OutputFound) == 0:
-        Lines[3] = "[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[3]
+        Lines[2] = "[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[2]
     else:
-        Lines[3] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[3]
+        Lines[2] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[2]
     
     #Script 3B  -->  next(os.walk('./pythonTAaCGH'))[2] (Files but  1 is directories)
     # lines[0].split('\t')
     OutputFound = []
-    CurrentFiles = []
-    for i in next(os.walk('Research/Data'))[1]:
-        CurrentSubDirects = next(os.walk('Research/Data/'+i))[1]
-        for j in CurrentSubDirects:      
-            print('Research/Data/'+i+'/'+j+'/'+i+'_'+j+'_dict_cyto.txt')
-            if( os.path.isfile('Research/Data/'+i+'/'+j+'/'+i+'_'+j+'_dict_cyto.txt')):
-                CytoFile = open('Research/Data/'+i+'/'+j+'/'+i+'_'+j+'_dict_cyto.txt',"r")
-                lines = CytoFile.readlines()
-                if(len(lines[0].split('\t'))==10):
-                    OutputFound.append(i+'/'+j)
-                CytoFile.close()
-            else:
-                continue
-         
+    for i in CytoFileHeaders:
+        if( i[3] == 14):
+            OutputFound.append(i[0]) 
 
+    if len(OutputFound) == 0:
+        Lines[3] = "[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[3]
+    else:
+        Lines[3] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[3] 
+    #Script 4 --> next(os.walk('./pythonTAaCGH'))[2] (Files but  1 is directories)
+    # Research/Results/horlings/sect/2D/Homology/ B0_2D_horlings_sect_2p_seg2.txt   
+    for i in CytoFileHeaders:
+        StartPart = i[1].replace("\"","").split(",")
+        EndPart = i[2].replace("\"","").split(",")
+
+        if(os.path.isfile("Research/Results/"+i[0]+"/2D/Homology/"+"B0_2D_"+i[0].replace("/","_")+"_"+StartPart[0]+StartPart[1]+"_seg"+StartPart[2]+".txt") and os.path.isfile("Research/Results/"+i[0]+"/2D/Homology/"+"B0_2D_"+i[0].replace("/","_")+"_"+EndPart[0]+EndPart[1]+"_seg"+EndPart[2]+".txt") ):
+            OutputFound.append(i[0])
+        elif(os.path.isfile("Research/Results/"+i[0]+"/2D/Homology/"+"B1_2D_"+i[0].replace("/","_")+"_"+StartPart[0]+StartPart[1]+"_seg"+StartPart[2]+".txt") and os.path.isfile("Research/Results/"+i[0]+"/2D/Homology/"+"B1_2D_"+i[0].replace("/","_")+"_"+EndPart[0]+EndPart[1]+"_seg"+EndPart[2]+".txt") ):
+            OutputFound.append(i[0])
+
+             
     if len(OutputFound) == 0:
         Lines[4] = "[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[4]
     else:
         Lines[4] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[4]
-    #Script 4 --> next(os.walk('./pythonTAaCGH'))[2] (Files but  1 is directories)
-    # ~/Research/Results/dataSet/action/2D/Homology/  (action: arms or sect)
-    # ~/Research/Results/SET/2D/Homology/
- #- alternatively you could check for some files like the first and last. For instance for B0:
-  #    B0_2D_horlings_sect_1p_seg1.txt
-   #   B0_2D_horlings_sect_23q_seg7.txt
-#   - there is also a file storing the epsilon used. If the user already ran the homology and the files are still there, you could provide the user with some feedback like "homology has been already ran for epsilon=0.03 for a dictionary splitting the dataset in 8 parts. Do you want to erase these files and run it again? " If they don't want to do that they could use a different subdir to save everything there and run the homology again with a different dictionary or a different epsilion. You could display a message like that after they press "no" as an answer
-
-    OutputFound = []
-    for i in next(os.walk('Research/Results'))[1]:
-        if((os.path.isfile('Research/Results/'+i+'/arms/2D/Homology/B0_2D_'+i+'_arms_1p_seg1.txt') or os.path.isfile('Research/Results/'+i+'/sect/2D/Homology/B0_2D_'+i+'_sect_1p_seg1.txt'))  and  (os.path.isfile('Research/Results/'+i+'/arms/2D/Homology/B0_2D_'+i+'_arms_1p_seg'+str(len(CurrentFiles)-2)+'.txt') or os.path.isfile('Research/Results/'+i+'/sect/2D/Homology/B0_2D_'+i+'_sect_23q_seg'+str(len(CurrentFiles)-2)+'.txt')) ):
-            if(os.path.isdir('Research/Results/'+i+'/2D/Homology')):
-                OutputFound.append('Results/'+i)
-            else:
-                continue
-        else:
-            continue
-             
-    if len(OutputFound) == 0:
-        Lines[5] = "[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[5]
-    else:
-        Lines[5] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[5]
     #Script 5 --> next(os.walk('./pythonTAaCGH'))[2] (Files but  1 is directories)
     # ~/Research/Results/SET/significance/pvals
     OutputFound = []
@@ -600,9 +802,9 @@ def ShowMenu():
             continue
              
     if len(OutputFound) == 0:
-        Lines[6] = "[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[6]
+        Lines[5] = "[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[5]
     else:
-        Lines[6] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[6]
+        Lines[5] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[5]
    #Script 6 --> next(os.walk('./pythonTAaCGH'))[2] (Files but  1 is directories)
     OutputFound = []
     for i in next(os.walk('Research/Data'))[1]:
@@ -612,9 +814,9 @@ def ShowMenu():
                     OutputFound.append(i+"/"+j)
 
     if len(OutputFound) == 0:
-        Lines[7] = "[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[7]
+        Lines[6] = "[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[6]
     else:
-        Lines[7] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[7]
+        Lines[6] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[6]
    #Script 7 --> next(os.walk('./pythonTAaCGH'))[2] (Files but  1 is directories)
     OutputFound = []
     for i in next(os.walk('Research/Results'))[1]:
@@ -624,9 +826,9 @@ def ShowMenu():
                 OutputFound.append(i+"/"+j)
 
     if len(OutputFound) == 0:
-        Lines[8] = "[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[8]
+        Lines[7] = "[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[7]
     else:
-        Lines[8] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[8]
+        Lines[7] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[7]
    #Script 8 
     OutputFound = []
     for i in next(os.walk('Research/Results'))[1]:
@@ -635,9 +837,9 @@ def ShowMenu():
            OutputFound.append(i+"/"+j)
 
     if len(OutputFound) == 0:
-        Lines[9] = "[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[9]
+        Lines[8] = "[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[8]
     else:
-        Lines[9] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[9]
+        Lines[8] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[8]
    #Script 9
     OutputFound = []
    # List files in ~/Reseach/Results/SET/CenterMass
@@ -646,9 +848,9 @@ def ShowMenu():
             OutputFound.append(os.walk('Research/Results/'+i+'/CenterMass')[2])
     
         if len(OutputFound) == 0:
-            Lines[10] = "[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[10]
+            Lines[9] = "[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[9]
         else:
-            Lines[10] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[10]
+            Lines[9] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[9]
     OutputFound = []
    # Script 10
     for i in next(os.walk('Research/Results'))[1]:
@@ -660,9 +862,9 @@ def ShowMenu():
                 OutputFound.append(i)
     
         if len(OutputFound) == 0:
-            Lines[11] = "[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[11]
+            Lines[10] = "[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[10]
         else:
-            Lines[11] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[11]
+            Lines[10] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[10]
    #Script 11
     for i in next(os.walk('Research/Results'))[1]:
        if(os.path.isfile('Research/Data/'+i+'/'+i+'_phen.txt')):
@@ -673,9 +875,9 @@ def ShowMenu():
                OutputFound.append(i)
     
        if len(OutputFound) == 0:
-           Lines[12] = "[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[12]
+           Lines[11] = "[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[11]
        else:
-           Lines[12] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[12]
+           Lines[11] = "[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[11]
     
             
     for i in Lines:
@@ -707,9 +909,20 @@ def SetEpsilon(NewNum):
     ParameterFile.writelines(Lines)
     ParameterFile.close()
 
+def GetCytoFileStartAndEnd():
+    # Format [ [dataset/sect_or_arms_etc.,start,end],...   ]
+    Result = []
+    for i in next(os.walk('Research/Data'))[1]:
+        for j in next(os.walk('Research/Data/'+i))[1]:
+            if(os.path.isfile('Research/Data/'+i+'/'+j+'/'+i+'_'+j+'_dict_cyto.txt')):
+                CytoFile = open('Research/Data/'+i+'/'+j+'/'+i+'_'+j+'_dict_cyto.txt',"r")
+                Lines = CytoFile.readlines()
+                One = Lines[1].split('\t')
+                Last = Lines[len(Lines)-1].split('\t')
+                Result.append([i+'/'+j,One[0]+","+One[1][1]+","+One[5],Last[0]+","+Last[1][1]+","+Last[5],Lines[0].count('\t')+1])
+                CytoFile.close()
 
-
-
+    return Result
 ################################################ END UTILITIES #######################################################################
 
 ########################################## MODES ####################################################################################
@@ -829,15 +1042,18 @@ def Clear():
 #Clear()
 #SetupParameterFile() 
 #print(ParameterFileExists())
-#ShowMenu()
+start = time.time()
+ShowMenu()
+end = time.time()
+print(end-start)
 #Script2(False)
 #call('cat Parameter.txt',shell=True)
 #Script3(False)
 #call('cat Parameter.txt',shell=True)
 #Script3B(False)
 #call('cat Parameter.txt',shell=True)
-
+#GetCytoFileStartAndEnd()
 #Script2(False)
 #ClearScript2()
 #ClearScript3B()
-Script4(False)
+#ClearScript4()
