@@ -738,7 +738,6 @@ def ShowMenu():
     ParameterFile = open("Parameter.txt", "r")
     Lines = ParameterFile.readlines()
     #Script 1 -- USER CHOOSES TO RUN AS NOT A NECCESSARY SCRIPT --
-    
     # Core Data Below --> For performance
     CytoFileHeaders = GetCytoFileStartAndEnd() # Format [ [dataset/sect_or_arms_etc.,start,end,Number of header lines],...   ]
     DataSets = next(os.walk('Research/Data'))[1]
@@ -881,7 +880,7 @@ def ShowMenu():
             print("[OUTPUT FOUND IN: "+str(OutputFound2)+"] --> "+Lines[11])
             
 
-    
+    print(Lines[12]+'\n'+Lines[13])
 
     
 
@@ -1040,7 +1039,6 @@ def Clear():
 #Clear()
 #SetupParameterFile() 
 #print(ParameterFileExists())
-ShowMenu()
 #Script2(False)
 #call('cat Parameter.txt',shell=True)
 #Script3(False)
@@ -1052,3 +1050,4 @@ ShowMenu()
 #ClearScript2()
 #ClearScript3B()
 #ClearScript4()
+ShowMenu()
