@@ -382,8 +382,22 @@ def Script4(ParameterFileUse,UseDefaultEpsilon):
  
 
 def ClearScript4():
-    pass
 
+    CytoFileHeaders = GetCytoFileStartAndEnd() # Format [ [dataset/sect_or_arms_etc.,start,end,Number of header lines],...   ]
+    OutputFound = []
+    for i in CytoFileHeaders:
+        StartPart = i[1].split(",")
+        EndPart = i[2].split(",")
+
+        if(os.path.isfile("Research/Results/"+i[0]+"/2D/Homology/"+"B0_2D_"+i[0].replace("/","_")+"_"+StartPart[0]+StartPart[1]+"_seg"+StartPart[2]+".txt") and os.path.isfile("Research/Results/"+i[0]+"/2D/Homology/"+"B0_2D_"+i[0].replace("/","_")+"_"+EndPart[0]+EndPart[1]+"_seg"+EndPart[2]+".txt") ):
+            OutputFound.append("Research/Results/"+i[0]+"/2D/Homology/")
+        elif(os.path.isfile("Research/Results/"+i[0]+"/2D/Homology/"+"B1_2D_"+i[0].replace("/","_")+"_"+StartPart[0]+StartPart[1]+"_seg"+StartPart[2]+".txt") and os.path.isfile("Research/Results/"+i[0]+"/2D/Homology/"+"B1_2D_"+i[0].replace("/","_")+"_"+EndPart[0]+EndPart[1]+"_seg"+EndPart[2]+".txt") ):
+            OutputFound.append("Research/Results/"+i[0]+"/2D/Homology/")
+
+             
+    if len(OutputFound) != 0:
+       DeleteThis = MakeMenu(OutputFound,"Choose one directory to clear 4 output")
+       call("rm -r "+OutputFound[DeleteThis-1],shell=True)        
 
 
 # Script Set : 5
@@ -409,7 +423,7 @@ def Script5(ParameterFileUse):
             print("====================== COMPLETED SCRIPT 5 ======================")
       else:
         Param = ""
-        while(Param == ""):
+        while(Param not in ("B0", "B1", "D", "CC")):
             print("Help: "+ParameterHelp[6][0])
             Param = input("Please enter a valid param: ")
             print(" ")
@@ -419,13 +433,13 @@ def Script5(ParameterFileUse):
         Phenotype = ""
         while(Phenotype == ""):
             print("Help: "+ParameterHelp[6][1])
-            HomDim = input("Please enter a valid phenotype: ")
+            Phenotype = input("Please enter a valid phenotype: ")
             print(" ")
         print("\n\n")
 
         DataSet = ""
         while(DataSet == "" or os.path.isdir('Research/Data/'+DataSet) == False):
-            print("Help: "+ParameterHelp[5][0])
+            print("Help: "+ParameterHelp[6][2])
             print("Current Directories: "+str(next(os.walk("Research/Data"))[1]))
             DataSet = input("Please enter a valid data set: ")
             print(" ")
@@ -445,7 +459,7 @@ def Script5(ParameterFileUse):
         
         if(SkipStep == False):
             while( type(NumParts) is not int):
-                print("Help: "+ParameterHelp[5][2])
+                print("Help: "+ParameterHelp[6][3])
                 NumParts = input("Please enter an integer for the NumParts parameter: ")
                 try:
                     NumParts = int(NumParts)
@@ -457,29 +471,28 @@ def Script5(ParameterFileUse):
 
         Action = ""
         while(Action != "sect" and Action !='arms'):
-            print("Help: "+ParameterHelp[5][4])
+            print("Help: "+ParameterHelp[6][4])
             Action = input("Please enter either \"sect\" or \"arms\" for the action parameter: ")
             print(" ")
         print("\n\n")
         
         Outlier = ""
         while(Outlier == ""):
-            print("Help: "+ParameterHelp[5][5])
-            Outlier = input("Please enter a valid data set: ")
+            print("Help: "+ParameterHelp[6][5])
+            Outlier = input("Please enter a valid option for outlier: ")
             print(" ")
         print("\n\n") 
 
         Subdir = ""
         while(Subdir == "" or os.path.isdir('Research/Data/'+DataSet) == False):
-            print("Help: "+ParameterHelp[5][6])
+            print("Help: "+ParameterHelp[6][6])
             Subdir = input("Please enter a valid subdir: ")
             print(" ")
         print("\n\n") 
         
         ScriptCalls = []
         for i in range(1,NumParts+1 ):
-            ScriptCalls.append(Popen(['R','--vanilla',"--args",Param,Phenotype,DataSet,str(i),Action,Outlier,Subdir,"<","5_sig_pcalc_parts.R"],cwd='Research/TAaCGH',shell=False))
-	
+            ScriptCalls.append(Popen(['R --vanilla --args '+" ".join([Param,Phenotype,DataSet,str(i),Action,Outlier,Subdir])+" < 5_sig_pcalc_parts.R"],cwd='Research/TAaCGH',shell=True))
         for j in ScriptCalls:
             j.wait()
         
@@ -757,9 +770,9 @@ def ShowMenu():
             if ((DataSets[i]+'_'+j+'_dict_cyto.txt') in next(os.walk('Research/Data/'+DataSets[i]+'/'+j))[2]):
                 OutputFound.append(DataSets[i]+'/'+j)
     if len(OutputFound) == 0:
-        print("[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[1])
+        print("First Script Is Not Part of the Suite"+'\n'+"[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[1])
     else:
-        print("[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[1])
+        print("First Script Is Not Part of the Suite"+'\n'+"[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[1])
     
     #Script 3  --> next(os.walk('./pythonTAaCGH'))[2] (Files but  1 is directories)
     OutputFound = []
@@ -1050,4 +1063,5 @@ def Clear():
 #ClearScript2()
 #ClearScript3B()
 #ClearScript4()
-ShowMenu()
+#ShowMenu()
+Script5(False)
