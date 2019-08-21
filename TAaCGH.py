@@ -695,16 +695,123 @@ def Script7(ParameterFileUse):
             print("====================== COMPLETED SCRIPT 7 ======================")
  
 def ClearScript7():
-    pass
+    CurrentResults = next(os.walk('Research/Results'))[1]
+    OutputFound = []
+    for i in CurrentResults:
+        CurrentSubDirects = next(os.walk('Research/Results/'+i))[1]
+        for j in CurrentSubDirects:
+            if(os.path.isdir('Research/Results/'+i+'/'+j+'/vis/curves/B0')):
+                OutputFound.append('Research/Results/'+i+'/'+j+'/vis/curves/B0')
+            elif(os.path.isdir('Research/Results/'+i+'/'+j+'/vis/curves/B1')):
+                OutputFound.append('Research/Results/'+i+'/'+j+'/vis/curves/B1')
+
+    if len(OutputFound) != 0:
+        DeleteThis = MakeMenu(OutputFound,"Choose one directory to delete:")
+        call("rm -r "+OutputFound[DeleteThis-1],shell=True)
+
 
 # Script Set : 8 
-def Script8():
-    call('ls',shell=True)
-    test = input("Enter a file name ")
-    call('cat '+test,shell=True)
-def ClearScript8():
-    pass
+def Script8(ParameterFileUse):
+   if(ParameterFileUse == True):
+        ParameterFile = open("Parameter.txt","r")
+        Lines = ParameterFile.readlines()
+        ScriptParameters = Lines[9].split(" ") 
+        ParameterFile.close()
+        
+        call("R --slave --args "+ScriptParameters[0]+" "+ScriptParameters[1]+" "+ScriptParameters[2]+" "+ScriptParameters[3]+" "+ScriptParameters[4]+" "+ScriptParameters[5]+" "+ScriptParameter[6]+"< 8_probesFDR.R",shell=True,cwd = "Research/TAaCGH")
+        print("\n")
+        RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
+        if(RunAgain == 1):
+            Script8(ParameterFileUse)
+        else:
+            print("====================== COMPLETED SCRIPT 8 ======================")
+   else:
 
+        Parameter = ""
+        while(Parameter != "B0" and Parameter != "B1"):
+            print("Help: "+ParameterHelp[9][0])
+            Parameter = input("Please enter a valid parameter: ")
+            print(" ")
+        print("\n\n")
+
+        Phenotype = ""
+        while(Phenotype == ""):
+            print("Help: "+ParameterHelp[9][1])
+            Phenotype = input("Please enter a valid phenotype: ")
+            print(" ")
+        print("\n\n") 
+        
+        DataSet = ""
+        while(DataSet == "" or os.path.isdir('Research/Data/'+DataSet) == False):
+            print("Help: "+ParameterHelp[9][2])
+            print("Current Directories: "+str(next(os.walk("Research/Data"))[1]))
+            DataSet = input("Please enter a valid data set: ")
+            print(" ")
+        print("\n\n") 
+        
+        Subdir = ""
+        while(Subdir == "" or os.path.isdir('Research/Data/'+DataSet) == False):
+            print("Help: "+ParameterHelp[9][3])
+            Subdir = input("Please enter a valid subdir: ")
+            print(" ")
+        print("\n\n") 
+        
+        Perm = ""
+        while( type(Perm) is not int):
+            print("Help: "+ParameterHelp[9][4])
+            Perm = input("Please enter an integer for the Perm parameter: ")
+            try:
+                Perm  = int(Perm)
+            except:
+                pass
+            print(" ")
+        print("\n\n")
+
+        Sig = ""
+        while( type(Sig) is not float):
+            print("Help: "+ParameterHelp[9][5])
+            Sig = input("Please enter an integer for the Sig parameter: ")
+            try:
+                Sig  = float(Sig)
+            except:
+                pass
+            print(" ")
+        print("\n\n")
+
+
+        Seed  = ""
+        while( type(Seed) is not int):
+            print("Help: "+ParameterHelp[9][6])
+            Seed = input("Please enter an integer for the Seed parameter: ")
+            try:
+                Seed = int(Seed)
+            except:
+                pass
+            print(" ")
+        print("\n\n")
+
+        call("R --slave --args "+Parameter+" "+Phenotype+" "+DataSet+" "+Subdir+" "+str(Perm) +" "+str(Sig)+" "+str(Seed)+" <8_probesFDR.R",shell=True,cwd = "Research/TAaCGH")
+        
+        print("\n")
+        RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
+        if(RunAgain == 1):
+            Script8(ParameterFileUse)
+        else:
+            print("====================== COMPLETED SCRIPT 8 ======================")
+
+def ClearScript8():
+    OutputFound = []
+    for i in CurrentResults:
+       #Results/SET/significance/pvals
+       if( os.path.isfile('Research/Results/'+i+'/significance/pvals/'+i+'_Probes_FDR.txt') and os.path.isfile('Research/Results/'+i+'/significance/pvals/'+i+'_Probes_FDRsig.txt')):
+           OutputFound.append(['Research/Results/'+i+'/significance/pvals/'+i+'_Probes_FDR.txt','Research/Results/'+i+'/significance/pvals/'+i+'_Probes_FDRsig.txt'])
+
+    if len(OutputFound) != 0:
+        DeleteThis = MakeMenu(OutputFound,"Choose one file group to delete:")
+        call("rm "+OutputFound[DeleteThis-1][0] +" "+,OutputFound[DeleteThis-1][1]shell=True)
+
+
+ 
 # Script Set : 9 
 def Script9():
     call('ls',shell=True)
@@ -1132,4 +1239,4 @@ def Clear():
 #ClearScript3B()
 #ClearScript4()
 #ShowMenu()
-Script7(False)
+Script8(False)
