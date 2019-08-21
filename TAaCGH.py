@@ -519,24 +519,18 @@ def ClearScript5():
     
 
 # Script Set : 6
-def Script6():
+def Script6(ParameterFileUse):
    if(ParameterFileUse == True):
         ParameterFile = open("Parameter.txt","r")
         Lines = ParameterFile.readlines()
         ScriptParameters = Lines[7].split(" ") 
         ParameterFile.close()
         
-        ScriptCalls = []
-        for i in range(1,int(ScriptParameters[3])+1  ):
-            ScriptCalls.append(Popen(['R','--vanilla',"--args",ScriptParameters[0], ScriptParameters[1] ,ScriptParameters[2] ,str(i),ScriptParameters[4] ,ScriptParameters[5] ,ScriptParameters[6], "<","5_sig_pcalc_parts.R"],cwd='Research/TAaCGH',shell=False))
-	
-        for j in ScriptCalls:
-            j.wait()
-        
+        call("R --slave --args "+ScriptParameters[0]+" "+ScriptParameters[1]+" "+ScriptParameters[2]+" "+ScriptParameters[3]+" "+ScriptParameters[4]+" "+ScriptParameters[5]+" "+ScriptParameters[6]+"< 6_FDR.R",shell=True,cwd = "Research/TAaCGH")
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
         if(RunAgain == 1):
-            Script5(ParameterFileUse)
+            Script6(ParameterFileUse)
         else:
             print("====================== COMPLETED SCRIPT 6 ======================")
    else:
@@ -576,7 +570,7 @@ def Script6():
         
         if(SkipStep == False):
             while( type(NumParts) is not int):
-                print("Help: "+ParameterHelp[5][2])
+                print("Help: "+ParameterHelp[7][3])
                 NumParts = input("Please enter an integer for the NumParts parameter: ")
                 try:
                     NumParts = int(NumParts)
@@ -607,25 +601,99 @@ def Script6():
             print(" ")
         print("\n\n") 
         
-        Popen(['R','--vanilla',"--args",Param,Phenotype,DataSet,str(i),Action,Outlier,Subdir,"<","5_sig_pcalc_parts.R"])
-	
+
+        call("R --slave --args "+File+" "+Parameter+" "+Phenotype+" "+NumParts+" "+Perm+" "+Sig+" "+Subdir +"< 6_FDR.R",shell=True,cwd = "Research/TAaCGH")
         
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
         if(RunAgain == 1):
-            Script5(ParameterFileUse)
+            Script6(ParameterFileUse)
         else:
-            print("====================== COMPLETED SCRIPT 5 ======================")
+            print("====================== COMPLETED SCRIPT 6 ======================")
  
 
 def ClearScript6():
-    pass
+    DataSets = next(os.walk('Research/Data'))[1]
+    SubDirects = [] # DataSet index correspondes to its subdirectory in subdirects list
+    for i in DataSets:
+        SubDirects.append(next(os.walk('Research/Data/'+i))[1])
+    
+    OutputFound = []
+    for i in range(0,len(DataSets)):
+        for j in SubDirects[i]:
+            if(os.path.isfile('Research/Data/'+DataSets[i]+'/'+j+'/'+DataSets[i]+'_FDR.txt') and os.path.isfile('Research/Data/'+DataSets[i]+'/'+j+'/'+DataSets[i]+'_FDRsigtxt') ):
+                    OutputFound.append('Research/Data/'+DataSets[i]+'/'+j+'/'+DataSets[i])
+
+    if len(OutputFound) != 0:
+        DeleteThis =  MakeMenu(OutputFound,"Choose one directory to delete:")
+        call("rm "+OutputFound[DeleteThis-1]+"_FDR.txt",shell=True) 
+        call("rm "+OutputFound[DeleteThis-1]+"_FDRsig.txt",shell=True) 
+
 
 # Script Set : 7
-def Script7():
-    call('ls',shell=True)
-    test = input("Enter a file name ")
-    call('cat '+test,shell=True)
+def Script7(ParameterFileUse):
+   if(ParameterFileUse == True):
+        ParameterFile = open("Parameter.txt","r")
+        Lines = ParameterFile.readlines()
+        ScriptParameters = Lines[8].split(" ") 
+        ParameterFile.close()
+        
+        call("R --slave --args "+ScriptParameters[0]+" "+ScriptParameters[1]+" "+ScriptParameters[2]+" "+ScriptParameters[3]+" "+ScriptParameters[4]+"< 7_vis_curves.R",shell=True,cwd = "Research/TAaCGH")
+        print("\n")
+        RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
+        if(RunAgain == 1):
+            Script7(ParameterFileUse)
+        else:
+            print("====================== COMPLETED SCRIPT 7 ======================")
+   else:
+
+        Parameter = ""
+        while(Parameter != "B0" and Parameter != "B1"):
+            print("Help: "+ParameterHelp[8][0])
+            Parameter = input("Please enter a valid parameter: ")
+            print(" ")
+        print("\n\n")
+
+        Phenotype = ""
+        while(Phenotype == ""):
+            print("Help: "+ParameterHelp[8][1])
+            Phenotype = input("Please enter a valid phenotype: ")
+            print(" ")
+        print("\n\n") 
+        
+        DataSet = ""
+        while(DataSet == "" or os.path.isdir('Research/Data/'+DataSet) == False):
+            print("Help: "+ParameterHelp[8][2])
+            print("Current Directories: "+str(next(os.walk("Research/Data"))[1]))
+            DataSet = input("Please enter a valid data set: ")
+            print(" ")
+        print("\n\n") 
+        
+        Action = ""
+        while(Action != "sect" and Action !='arms'):
+            print("Help: "+ParameterHelp[8][3])
+            Action = input("Please enter either \"sect\" or \"arms\" for the action parameter: ")
+            print(" ")
+        print("\n\n")
+        
+ 
+        Subdir = ""
+        while(Subdir == "" or os.path.isdir('Research/Data/'+DataSet) == False):
+            print("Help: "+ParameterHelp[8][4])
+            Subdir = input("Please enter a valid subdir: ")
+            print(" ")
+        print("\n\n") 
+        
+
+        call("R --slave --args "+Parameter+" "+Phenotype+" "+DataSet+" "+Action+" "+Subdir +"<7_vis_curves.R",shell=True,cwd = "Research/TAaCGH")
+        
+        print("\n")
+        RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
+        if(RunAgain == 1):
+            Script7(ParameterFileUse)
+        else:
+            print("====================== COMPLETED SCRIPT 7 ======================")
+ 
 def ClearScript7():
     pass
 
@@ -1064,4 +1132,4 @@ def Clear():
 #ClearScript3B()
 #ClearScript4()
 #ShowMenu()
-Script5(False)
+Script7(False)
