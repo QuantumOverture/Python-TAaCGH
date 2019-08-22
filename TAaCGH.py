@@ -30,6 +30,8 @@ def Script2(ParameterFileUse):
         ParameterFile.close()
         
         call('(cd Research/TAaCGH && R --vanilla --args '+ScriptParameters[1]+' '+ScriptParameters[2]+' '+ScriptParameters[3]+' '+ScriptParameters[4]+' '+ScriptParameters[5]+' < Research/TAaCGH/2_cgh_dictionary_cytoband.R)',shell=True)
+        SetNumParts(ScriptParameters[2]) 
+        SetSegLength(ScriptParameters[3])
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
         if(RunAgain == 1):
@@ -73,6 +75,7 @@ def Script2(ParameterFileUse):
             except:
                 pass
             print(" ")
+        SetSegLength(SegLength)
         print("\n\n")
         
         Subdir = input("Please enter the name for the subdir associated with this script(sect or arms or other): ")
@@ -808,18 +811,123 @@ def ClearScript8():
 
     if len(OutputFound) != 0:
         DeleteThis = MakeMenu(OutputFound,"Choose one file group to delete:")
-        call("rm "+OutputFound[DeleteThis-1][0] +" "+,OutputFound[DeleteThis-1][1]shell=True)
+        call("rm "+OutputFound[DeleteThis-1][0] +" "+OutputFound[DeleteThis-1][1],shell=True)
 
 
  
 # Script Set : 9 
-def Script9():
-    call('ls',shell=True)
-    test = input("Enter a file name ")
-    call('cat '+test,shell=True)
-def ClearScript9():
-    pass
+def Script9(ParameterFileUse):
+   if(ParameterFileUse == True):
+        ParameterFile = open("Parameter.txt","r")
+        Lines = ParameterFile.readlines()
+        ScriptParameters = Lines[10].split(" ") 
+        ParameterFile.close()
+        
+        call("R --slave --args "+ScriptParameters[0]+" "+ScriptParameters[1]+" "+ScriptParameters[2]+" "+ScriptParameters[3]+" "+ScriptParameters[4]+" "+ScriptParameters[5]+"< 9_mean_diff_perm_NoOut.R",shell=True,cwd = "Research/TAaCGH")
+        print("\n")
+        RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
+        if(RunAgain == 1):
+            Script9(ParameterFileUse)
+        else:
+            print("====================== COMPLETED SCRIPT 9 ======================")
+   else:
 
+
+        DataSet = ""
+        while(DataSet == "" or os.path.isdir('Research/Data/'+DataSet) == False):
+            print("Help: "+ParameterHelp[10][0])
+            print("Current Directories: "+str(next(os.walk("Research/Data"))[1]))
+            DataSet = input("Please enter a valid data set: ")
+            print(" ")
+        print("\n\n") 
+ 
+        SegLength = ""
+        ParameterFile = open("Parameter.txt","r")
+        Lines = ParameterFile.readlines()
+        ParameterFile.close()
+        SkipStep = False
+        if(len(Lines[14].split(" ")) == 2):
+            print("SeglLength is set to: "+str(Lines[14].split(" ")[1]))
+            Option = MakeMenu(["Yes","No"],"Would you like to use this value[HIGHLY RECOMMENDED]?")
+            if(Option == 1):
+                SegLength = int(Lines[14].split(" ")[1].replace("\n",""))
+                SkipStep = True
+        
+        if(SkipStep == False):
+            while( type(SegLength) is not int):
+                print("Help: "+ParameterHelp[10][1])
+                SegLength = input("Please enter an integer for the SegLength parameter: ")
+                try:
+                    SegLength = int(SegLength)
+                except:
+                    pass
+            print(" ")
+            SetSegLength(SegLength)	
+        print("\n\n")
+
+
+        Phenotype = ""
+        while(Phenotype == ""):
+            print("Help: "+ParameterHelp[10][2])
+            Phenotype = input("Please enter a valid phenotype: ")
+            print(" ")
+        print("\n\n")
+
+        
+        Perm = ""
+        while( type(Perm) is not int):
+            print("Help: "+ParameterHelp[10][3])
+            Perm = input("Please enter an integer for the Perm parameter: ")
+            try:
+                Perm  = int(Perm)
+            except:
+                pass
+            print(" ")
+        print("\n\n")
+
+        Sig = ""
+        while( type(Sig) is not float):
+            print("Help: "+ParameterHelp[10][4])
+            Sig = input("Please enter an integer for the Sig parameter: ")
+            try:
+                Sig  = float(Sig)
+            except:
+                pass
+            print(" ")
+        print("\n\n")
+
+
+        Seed  = ""
+        while( type(Seed) is not int):
+            print("Help: "+ParameterHelp[10][5])
+            Seed = input("Please enter an integer for the Seed parameter: ")
+            try:
+                Seed = int(Seed)
+            except:
+                pass
+            print(" ")
+        print("\n\n")
+
+        call("R --slave --args "+DataSet+" "+SegLength+" "+Phenotype+" "+str(Perm)+" "+str(sig) +" "+str(Seed)+" <9_mean_diff_perm_NoOut.R",shell=True,cwd = "Research/TAaCGH")
+        
+        print("\n")
+        RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
+        if(RunAgain == 1):
+            Script9(ParameterFileUse)
+        else:
+            print("====================== COMPLETED SCRIPT 9 ======================")
+
+
+def ClearScript9():
+   OutputFound = []
+   # List files in ~/Reseach/Results/SET/CenterMass
+   for i in next(os.walk('Research/Results'))[1]:
+        if(os.path.isdir('Research/Results/'+i+'/CenterMass')):
+            OutputFound.append('Research/Results/'+i+'/CenterMass')
+    
+        if len(OutputFound) != 0:
+            DeleteThis = MakeMenu(OutputFound,"Choose one directory to delete:")
+            call("rm -r "+OutputFound[DeleteThis-1],shell=True)
 
 # use List Comprehension for Script calls
 
@@ -919,7 +1027,7 @@ def SetupParameterFile():
     ParameterFile.write("11_class_pat_seg.R\n")
     ParameterFile.write("NumParts: \n")
     ParameterFile.write("Epsilon: \n")
-    ParameterFile.write("Progress: \n")
+    ParameterFile.write("SegLength: \n")
     ParameterFile.close()
 
 def ShowMenu():
@@ -1094,6 +1202,15 @@ def SetEpsilon(NewNum):
     ParameterFile.writelines(Lines)
     ParameterFile.close()
 
+def SetSegLength(NewNum):
+    ParameterFile = open("Parameter.txt","r+")
+    Lines = ParameterFile.readlines()
+    ParameterFile.truncate(0)
+    Lines[14] = "SegLength: " + str(NewNum)+'\n'
+    ParameterFile.writelines(Lines)
+    ParameterFile.close()
+
+
 def GetCytoFileStartAndEnd():
     # Format [ [dataset/sect_or_arms_etc.,start,end],...   ]
     Result = []
@@ -1239,4 +1356,4 @@ def Clear():
 #ClearScript3B()
 #ClearScript4()
 #ShowMenu()
-Script8(False)
+Script9(False)
