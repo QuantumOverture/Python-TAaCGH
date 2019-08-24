@@ -29,7 +29,8 @@ def Script2(ParameterFileUse):
         ScriptParameters = Lines[2].split(" ") 
         ParameterFile.close()
         
-        call('(cd Research/TAaCGH && R --vanilla --args '+ScriptParameters[1]+' '+ScriptParameters[2]+' '+ScriptParameters[3]+' '+ScriptParameters[4]+' '+ScriptParameters[5]+' < Research/TAaCGH/2_cgh_dictionary_cytoband.R)',shell=True)
+
+        call('(cd Research/TAaCGH && R --vanilla --args '+ScriptParameters[1]+' '+ScriptParameter[2]+' '+ScriptParameters[3]+' '+ScriptParameters[4]+' '+ScriptParameters[5]+' < Research/TAaCGH/2_cgh_dictionary_cytoband.R)',shell=True)
         SetNumParts(ScriptParameters[2]) 
         SetSegLength(ScriptParameters[3])
         print("\n")
@@ -113,6 +114,7 @@ def Script3(ParameterFileUse):
         Lines = ParameterFile.readlines()
         ScriptParameters = Lines[3].split(" ") 
         ParameterFile.close()
+ 
         
         call('(cd Research/TAaCGH && R --slave --args '+ScriptParameters[1]+'  < 3_Transposed_aCGH.R)',shell=True)
         print("\n")
@@ -160,7 +162,7 @@ def Script3B(ParameterFileUse):
         Lines = ParameterFile.readlines()
         ScriptParameters = Lines[4].split(" ") 
         ParameterFile.close()
-        
+ 
         call('(cd Research/TAaCGH && R --slave --args '+ScriptParameters[1]+' '+ScriptParameters[2]+' < 3b_dist_Q05.R)',shell=True)
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
@@ -261,7 +263,7 @@ def ClearScript3B():
 
 
 # Script Set : 4
-def Script4(ParameterFileUse,UseDefaultEpsilon):
+def Script4(ParameterFileUse,UseDefaultEpsilon,UseDefaultNumparts):
     # USE POPEN IN SUBPROCESS!!!
     if(ParameterFileUse == True):
         ParameterFile = open("Parameter.txt","r")
@@ -270,18 +272,19 @@ def Script4(ParameterFileUse,UseDefaultEpsilon):
         ParameterFile.close()
         Epsilon = ""
         if(not UseDefaultEpsilon):
-             while( type(Epsilon) is not float):
-                print("Help: "+ParameterHelp[5][3])
-                Epsilon = input("Please enter an floating point for the Epsilon parameter: ")
-                try:
-                    Epsilon = float(Epsilon)
-                except:
-                    pass
+            Epsilon = ScriptParameters[3]
         else:
-            Epsilon = ScriptParameter[3]
+            Epsilon = Lines[13].split(" ")[1]
         ScriptCalls = []
-        for i in range(1,int(ScriptParameter[2])+1 ):
-            ScriptCalls.append(Popen(['python','4_hom_stats_parts.py',ScriptParameter[0],ScriptParameter[1],str(i),str(Epsilon),ScriptParameter[4],],cwd='Research/TAaCGH',shell=False))
+        
+        if(not UseDefaultNumparts):
+            Numparts = ScriptParameters[3]
+        else:
+            Numparts = Lines[12].split(" ")[1]
+
+
+        for i in range(1,Numparts+1):
+            ScriptCalls.append(Popen(['python','4_hom_stats_parts.py',ScriptParameters[1],ScriptParameters[2],str(i),str(Epsilon),ScriptParameters[5]],cwd='Research/TAaCGH',shell=False))
 	
         for j in ScriptCalls:
             j.wait()
@@ -404,16 +407,22 @@ def ClearScript4():
 
 
 # Script Set : 5
-def Script5(ParameterFileUse):
+def Script5(ParameterFileUse,UseDefaultNumparts):
       if(ParameterFileUse == True):
         ParameterFile = open("Parameter.txt","r")
         Lines = ParameterFile.readlines()
         ScriptParameters = Lines[6].split(" ") 
         ParameterFile.close()
-        
+        if(not UseDefaultNumparts):
+            Numparts = ScriptParameters[3]
+        else:
+            Numparts = Lines[12].split(" ")[1]
+
+
+       
         ScriptCalls = []
-        for i in range(1,int(ScriptParameters[3])+1):
-            ScriptCalls.append(Popen(['R','--vanilla',"--args",ScriptParameters[0], ScriptParameters[1] ,ScriptParameters[2] ,str(i),ScriptParameters[4] ,ScriptParameters[5] ,ScriptParameters[6], "<","5_sig_pcalc_parts.R"],cwd='Research/TAaCGH',shell=False))
+        for i in range(1,Numparts+1):
+            ScriptCalls.append(Popen(['R','--vanilla',"--args",ScriptParameters[1], ScriptParameters[2] ,ScriptParameters[3] ,str(i),ScriptParameters[5] ,ScriptParameters[6] ,ScriptParameters[7], "<","5_sig_pcalc_parts.R"],cwd='Research/TAaCGH',shell=False))
 	
         for j in ScriptCalls:
             j.wait()
@@ -424,6 +433,8 @@ def Script5(ParameterFileUse):
             Script5(ParameterFileUse)
         else:
             print("====================== COMPLETED SCRIPT 5 ======================")
+            return "SUCCESSFULL RUN" 
+
       else:
         Param = ""
         while(Param not in ("B0", "B1", "D", "CC")):
@@ -522,14 +533,20 @@ def ClearScript5():
     
 
 # Script Set : 6
-def Script6(ParameterFileUse):
+def Script6(ParameterFileUse,UseDefaultNumparts):
    if(ParameterFileUse == True):
         ParameterFile = open("Parameter.txt","r")
         Lines = ParameterFile.readlines()
         ScriptParameters = Lines[7].split(" ") 
         ParameterFile.close()
         
-        call("R --slave --args "+ScriptParameters[0]+" "+ScriptParameters[1]+" "+ScriptParameters[2]+" "+ScriptParameters[3]+" "+ScriptParameters[4]+" "+ScriptParameters[5]+" "+ScriptParameters[6]+"< 6_FDR.R",shell=True,cwd = "Research/TAaCGH")
+        if(not UseDefaultNumparts):
+            Numparts = ScriptParameters[3]
+        else:
+            Numparts = Lines[12].split(" ")[1]
+
+
+        call("R --slave --args "+ScriptParameters[1]+" "+ScriptParameters[2]+" "+ScriptParameters[3]+" "+ScriptParameters[4]+" "+ScriptParameters[5]+" "+ScriptParameters[6]+" "+ScriptParameters[7]+"< 6_FDR.R",shell=True,cwd = "Research/TAaCGH")
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
         if(RunAgain == 1):
@@ -641,11 +658,12 @@ def Script7(ParameterFileUse):
         ScriptParameters = Lines[8].split(" ") 
         ParameterFile.close()
         
-        call("R --slave --args "+ScriptParameters[0]+" "+ScriptParameters[1]+" "+ScriptParameters[2]+" "+ScriptParameters[3]+" "+ScriptParameters[4]+"< 7_vis_curves.R",shell=True,cwd = "Research/TAaCGH")
+        call("R --slave --args "+ScriptParameters[1]+" "+ScriptParameters[2]+" "+ScriptParameters[3]+" "+ScriptParameters[4]+" "+ScriptParameters[5]+"< 7_vis_curves.R",shell=True,cwd = "Research/TAaCGH")
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
         if(RunAgain == 1):
             Script7(ParameterFileUse)
+            return 
         else:
             print("====================== COMPLETED SCRIPT 7 ======================")
    else:
@@ -721,7 +739,7 @@ def Script8(ParameterFileUse):
         ScriptParameters = Lines[9].split(" ") 
         ParameterFile.close()
         
-        call("R --slave --args "+ScriptParameters[0]+" "+ScriptParameters[1]+" "+ScriptParameters[2]+" "+ScriptParameters[3]+" "+ScriptParameters[4]+" "+ScriptParameters[5]+" "+ScriptParameter[6]+"< 8_probesFDR.R",shell=True,cwd = "Research/TAaCGH")
+        call("R --slave --args "+ScriptParameters[1]+" "+ScriptParameters[2]+" "+ScriptParameters[3]+" "+ScriptParameters[4]+" "+ScriptParameters[5]+" "+ScriptParameters[5]+" "+ScriptParameter[6]+"< 8_probesFDR.R",shell=True,cwd = "Research/TAaCGH")
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
         if(RunAgain == 1):
@@ -816,14 +834,20 @@ def ClearScript8():
 
  
 # Script Set : 9 
-def Script9(ParameterFileUse):
+def Script9(ParameterFileUse,UseDefaultSegLength):
    if(ParameterFileUse == True):
         ParameterFile = open("Parameter.txt","r")
         Lines = ParameterFile.readlines()
         ScriptParameters = Lines[10].split(" ") 
         ParameterFile.close()
         
-        call("R --slave --args "+ScriptParameters[0]+" "+ScriptParameters[1]+" "+ScriptParameters[2]+" "+ScriptParameters[3]+" "+ScriptParameters[4]+" "+ScriptParameters[5]+"< 9_mean_diff_perm_NoOut.R",shell=True,cwd = "Research/TAaCGH")
+        if(not UseDefaultSegLength):
+            Numparts = ScriptParameter[2]
+        else:
+            Numparts = Lines[14].split(" ")[1]
+
+
+        call("R --slave --args "+ScriptParameters[1]+" "+ScriptParameters[2]+" "+ScriptParameters[3]+" "+ScriptParameters[4]+" "+ScriptParameters[5]+" "+ScriptParameters[6]+"< 9_mean_diff_perm_NoOut.R",shell=True,cwd = "Research/TAaCGH")
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
         if(RunAgain == 1):
@@ -1007,6 +1031,9 @@ def SetupParameterFile():
     ParameterFile = open("Parameter.txt","w")
     ParameterFile.write("PLEASE DO NOT EDIT THIS FINAL MANUALLY UNLESS YOU KNOW WHAT YOU ARE DOING!!\n")
     ParameterEdits = MakeMenu(["Yes","No"],"Would you like to pre-write the parameters for the scripts you will running[REQUIRED FOR AUTO MODE BUT NOT NECCESSARY FOR REGULAR MODE?")
+    NumParts = None
+    SegLength = None
+    Eps = None
     if( ParameterEdits == 1):
         EditEnabled = True
     else:
@@ -1017,9 +1044,26 @@ def SetupParameterFile():
         ParameterFile.write(Line_Headers[i]+" ")
         if(EditEnabled):
             for j in range(0,len(CurrentParameters)):
+                if(NumParts !=None):
+                    print("Set Numparts : "+NumParts)
+                if(SegLength !=None):
+                    print("Set SegLength : "+SegLength)
+                if(Eps !=None):
+                    print("Set Epsilon : "+Eps)
+                
                 print(Line_Headers[i] +  ": Instructions -> " + ParameterHelp[i][j])
                 Parameter = input("Please Enter Parameter for: "+CurrentParameters[j]+ " -> ")
                 ParameterFile.write(Parameter+" ")
+                
+                if( i == 2 and CurrentParameters[j] =="numParts"):
+                    NumParts = Parameter
+                elif (i == 2 and CurrentParameters[j] =="segLength"):
+                    SegLength = Parameter
+                elif ( i == 5 and CurrentParameters[j] == "epsIncr"):
+                    Eps = Parameter
+
+
+
                 print("\n")
             print("\n\n")
             ParameterFile.write("\n")
@@ -1342,7 +1386,7 @@ def Clear():
 #Setup()
 #RegularMode()
 #Clear()
-#SetupParameterFile() 
+SetupParameterFile() 
 #print(ParameterFileExists())
 #Script2(False)
 #call('cat Parameter.txt',shell=True)
@@ -1356,4 +1400,10 @@ def Clear():
 #ClearScript3B()
 #ClearScript4()
 #ShowMenu()
-Script9(False)
+#Script9(False)
+if __name__ == '__main__':
+    print("WOW")
+
+
+
+
