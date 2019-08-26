@@ -1097,9 +1097,9 @@ def ShowMenu():
             if ((DataSets[i]+'_'+j+'_dict_cyto.txt') in next(os.walk('Research/Data/'+DataSets[i]+'/'+j))[2]):
                 OutputFound.append(DataSets[i]+'/'+j)
     if len(OutputFound) == 0:
-        print("First Script Is Not Part of the Suite"+'\n'+"[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[1])
+        print("First Script Is Not Part of the Suite"+'\n'+"[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[2])
     else:
-        print("First Script Is Not Part of the Suite"+'\n'+"[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[1])
+        print("First Script Is Not Part of the Suite"+'\n'+"[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[2])
     
     #Script 3  --> next(os.walk('./pythonTAaCGH'))[2] (Files but  1 is directories)
     OutputFound = []
@@ -1107,9 +1107,9 @@ def ShowMenu():
         if ((DataSets[i]+'_data.txt') in CurrentFiles[i]):
             OutputFound.append(DataSets[i])
     if len(OutputFound) == 0:
-        print("[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[2])
+        print("[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[3])
     else:
-        print("[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[2])
+        print("[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[3])
     
     #Script 3B  -->  next(os.walk('./pythonTAaCGH'))[2] (Files but  1 is directories)
     # lines[0].split('\t')
@@ -1119,9 +1119,9 @@ def ShowMenu():
             OutputFound.append(i[0]) 
 
     if len(OutputFound) == 0:
-        print("[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[3])
+        print("[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[4])
     else:
-        print("[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[3]) 
+        print("[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[4]) 
     #Script 4 --> next(os.walk('./pythonTAaCGH'))[2] (Files but  1 is directories)
     # Research/Results/horlings/sect/2D/Homology/ B0_2D_horlings_sect_2p_seg2.txt 
     OutputFound = []
@@ -1130,15 +1130,15 @@ def ShowMenu():
         EndPart = i[2].split(",")
 
         if(os.path.isfile("Research/Results/"+i[0]+"/2D/Homology/"+"B0_2D_"+i[0].replace("/","_")+"_"+StartPart[0]+StartPart[1]+"_seg"+StartPart[2]+".txt") and os.path.isfile("Research/Results/"+i[0]+"/2D/Homology/"+"B0_2D_"+i[0].replace("/","_")+"_"+EndPart[0]+EndPart[1]+"_seg"+EndPart[2]+".txt") ):
-            OutputFound.append(i[0])
+            OutputFound.append(i[0]+" With Epsilon: "+EpsFind(i[0]))
         elif(os.path.isfile("Research/Results/"+i[0]+"/2D/Homology/"+"B1_2D_"+i[0].replace("/","_")+"_"+StartPart[0]+StartPart[1]+"_seg"+StartPart[2]+".txt") and os.path.isfile("Research/Results/"+i[0]+"/2D/Homology/"+"B1_2D_"+i[0].replace("/","_")+"_"+EndPart[0]+EndPart[1]+"_seg"+EndPart[2]+".txt") ):
-            OutputFound.append(i[0])
+            OutputFound.append(i[0])+" With Epsilon: "+EpsFind(i[0])
 
              
     if len(OutputFound) == 0:
-        print("[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[4])
+        print("[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[5])
     else:
-        print("[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[4])
+        print("[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[5])
     #Script 5 --> next(os.walk('./pythonTAaCGH'))[2] (Files but  1 is directories)
     # ~/Research/Results/SET/significance/pvals
     OutputFound = []
@@ -1149,9 +1149,9 @@ def ShowMenu():
             continue
              
     if len(OutputFound) == 0:
-        print("[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[5])
+        print("[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[6])
     else:
-        print("[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[5])
+        print("[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[6])
    #Script 6 --> next(os.walk('./pythonTAaCGH'))[2] (Files but  1 is directories)
     OutputFound = []
     for i in range(0,len(DataSets)):
@@ -1160,9 +1160,9 @@ def ShowMenu():
                     OutputFound.append(DataSets[i]+"/"+j)
 
     if len(OutputFound) == 0:
-        print("[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[6])
+        print("[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[7])
     else:
-        print("[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[6])
+        print("[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[7])
    #Script 7 --> next(os.walk('./pythonTAaCGH'))[2] (Files but  1 is directories)
     OutputFound = []
     for i in CurrentResults:
@@ -1172,9 +1172,9 @@ def ShowMenu():
                 OutputFound.append(i+"/"+j)
 
     if len(OutputFound) == 0:
-        print("[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[7])
+        print("[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[8])
     else:
-        print("[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[7])
+        print("[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[8])
    #Script 8 
     OutputFound = []
     for i in CurrentResults:
@@ -1183,9 +1183,9 @@ def ShowMenu():
            OutputFound.append(i+"/"+j)
 
     if len(OutputFound) == 0:
-        print("[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[8])
+        print("[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[9])
     else:
-        print("[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[8])
+        print("[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[9])
    #Script 9
     OutputFound = []
    # List files in ~/Reseach/Results/SET/CenterMass
@@ -1194,9 +1194,9 @@ def ShowMenu():
             OutputFound.append(os.walk('Research/Results/'+i+'/CenterMass')[2])
     
         if len(OutputFound) == 0:
-            print("[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[9])
+            print("[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[10])
         else:
-            print("[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[9])
+            print("[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[10])
     OutputFound = []
     OutputFound2 = []
    # Script 10
@@ -1210,17 +1210,17 @@ def ShowMenu():
             elif ( NumberOfCols == 17):
                 OutputFound2.append(i)
         if len(OutputFound) == 0:
-            print("[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[10])
-        else:
-            print("[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[10])
-        
-        if len(OutputFound2) == 0:
             print("[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[11])
         else:
-            print("[OUTPUT FOUND IN: "+str(OutputFound2)+"] --> "+Lines[11])
+            print("[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[11])
+        
+        if len(OutputFound2) == 0:
+            print("[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[12])
+        else:
+            print("[OUTPUT FOUND IN: "+str(OutputFound2)+"] --> "+Lines[12])
             
 
-    print(Lines[12]+'\n'+Lines[13])
+    print(Lines[13]+'\n'+Lines[14]+'\n'+Lines[15])
 
     
 
@@ -1254,6 +1254,13 @@ def SetSegLength(NewNum):
     ParameterFile.writelines(Lines)
     ParameterFile.close()
 
+def EpsFind(Set):
+    #/Research/Results/SET/2D/Homology/
+    for i in next(os.walk("Research/Results/"+Set+"/2D/Homology/"))[2]:
+        if("Epsilon" in i):
+           return i[8:11] 
+
+    return "Null"
 
 def GetCytoFileStartAndEnd():
     # Format [ [dataset/sect_or_arms_etc.,start,end],...   ]
@@ -1386,7 +1393,7 @@ def Clear():
 #Setup()
 #RegularMode()
 #Clear()
-SetupParameterFile() 
+#SetupParameterFile() 
 #print(ParameterFileExists())
 #Script2(False)
 #call('cat Parameter.txt',shell=True)
@@ -1402,8 +1409,6 @@ SetupParameterFile()
 #ShowMenu()
 #Script9(False)
 if __name__ == '__main__':
-    print("WOW")
-
-
+    ShowMenu()
 
 
