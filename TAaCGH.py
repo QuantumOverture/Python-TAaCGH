@@ -958,18 +958,29 @@ def ClearScript9():
 
 
 ScriptCalls = {
-        "Script2":Script2,
-        "Script3":Script3,
-        "Script3B":Script3B,
-        "Script4":Script4,
-        "Script5":Script5,
-        "Script6":Script6,
-        "Script7":Script7,
-        "Script8":Script8,
-        "Script9":Script9,
+        "2":Script2,
+        "3":Script3,
+        "4":Script3B,
+        "5":Script4,
+        "6":Script5,
+        "7":Script6,
+        "8":Script7,
+        "9":Script8,
+        "10":Script9,
 } 
 
+DelScript = {
+        "2":ClearScript2,
+        "3":ClearScript3,
+        "4":ClearScript3B,
+        "5":ClearScript4,
+        "6":ClearScript5,
+        "7":ClearScript6,
+        "8":ClearScript7,
+        "9":ClearScript8,
+        "10":ClearScript9,
 
+}
 ParametersForEachScript = ["DO NOT USE THIS INDEX" ,"dataSet","dataSet numParts action segLength subdir", "dataSet","dataSet arms/sect","dataSet homDim partNum epsIncr action","param phenotype dataSet partNum action outliers subdir", "name_of_dataSet/file Parameter phenotype Parts Perm sig subdir","param phenotype dataSet action subdir","Parameter phenotype name_of_dataSet/file subdir perm sig seed","name_of_dataSet/file seglength phenotype permutation sig seed","Sorry, you need to manually edit this file","Sorry, you need to manually edit this file"]
 
 ParameterHelp = ["DO NOT USE THIS INDEX",
@@ -1072,6 +1083,22 @@ def SetupParameterFile():
     ParameterFile.write("NumParts: \n")
     ParameterFile.write("Epsilon: \n")
     ParameterFile.write("SegLength: \n")
+    ParameterFile.close()
+
+def LinePara():
+    ParameterFile = open("Parameter.txt","w")
+
+    Line = MakeMenu([Line_Headers[i] for i in range(2,len(Line_Headers)-4)],"Please choose a line you would like to re-write") + 1
+
+    CurrentParameters = ParametersForEachScript[Line].split(" ")
+    ParameterFile.write(Line_Headers[Line]+" ")
+        
+    for j in range(0,len(CurrentParameters)):   
+        print(Line_Headers[Line] +  ": Instructions -> " + ParameterHelp[Line][j])
+        Parameter = input("Please Enter Parameter for: "+CurrentParameters[j]+ " -> ")
+        ParameterFile.write(Parameter+" ")
+        print("\n")
+
     ParameterFile.close()
 
 def ShowMenu():
@@ -1352,29 +1379,116 @@ def Setup():
    
 
 def RegularMode():  
-
+    
     if (not ParameterFileExists()):
         print("PLEASE RUN THE SETUP COMMAND BEFORE RUNNING SCRIPTS!")
+        exit(1)
     # meant to be run outside (directly) Research folder
     #Example Script Call --> ScriptCalls["Script3B"]()
-    while ( true ):
-        ShowMenu() 
-        # Make sure you clear the menu at correct times
+    
+    ParaFile = open("Parameter.txt","r")
+    Lines = ParaFile.readlines()
+    ParaFile.close()
 
-        TargetScript =  ReadScriptTarget() # Will have a make menu call and outputs the script user wants to run and has animation telling user what scripts they should run --> outputs tuple that tell us whether user is running or clear the effects of a script
-        if(TargetScript[0] == 'Run'):
-            RunScript(TargetScript) # Error checking and script call
-        elif (TargetScript[0] == 'Delete'):
-            DeleteScript(TargetScript) # Delete trace of script
-        elif( TargetScript[0] == 'Exit'):
+
+    while ( True ):
+        ShowMenu() 
+        print("")
+        Choice =  MakeMenu(["Run Script", "Delete Script Output", "Reset Entire Parameter.txt", "Reset Specific Parameter.txt Line","Exit Script"],"Please Choose one :")
+        if(Choice == 1):
+            print("")
+            ScriptChoice = MakeMenu([Line_Headers[i] for i in range(2,11)],"Which Script would you like to run?")
+            AutoMode = MakeMenu(["Yes","No"],"Would you like to autofill Parameters?")
+            if(AutoMode == 1):
+                ParameterFileUse = True
+                if ScriptChoice in [3,4,5]:
+                    if len(Lines[12]) > 11:
+                        Numparts =  MakeMenu(["Yes","No"],"Would you like use the recommended/default Numparts?") - 1
+                    else:
+                        Numparts = False
+
+                if ScriptChoice == 3:
+                    if len(Lines[13]) > 10:
+                        Epsi = MakeMenu(["Yes","No"],"Would you like use the recommended/default epsilon?") - 1
+                    else:
+                        Epsi = False
+                    ScriptCalls[str(ScriptChoice+1)](ParameterFileUse,Epsi,Numparts)
+
+                
+                if ScriptChoice == 8:
+                    if len(Lines[14]) > 12:
+                        seg = MakeMenu(["Yes","No"],"Would you like use the recommended/default SegLength?") - 1
+                    else:
+                        seg = False
+                    ScriptCalls[str(ScriptChoice+1)](ParameterFileUse,seg)
+
+                if ScriptChoice == 4 or ScriptChoice == 5:
+                    ScriptCalls[str(ScriptChoice+1)](ParameterFileUse,Numparts)
+                else:
+                    ScriptCalls[str(ScriptChoice+1)](ParameterFileUse)
+
+
+
+            else:
+                ScriptCalls[str(ScriptChoice+1)](False)
+
+            
+
+        elif (Choice == 2):
+            ScriptChoice = MakeMenu([Line_Headers[i] for i in range(2,11)],"Which Script's output would you like to delete?")
+            DelScript[str(ScriptChoice+1)]()
+        elif( Choice == 3):
+            SetupParameterFile()
+        elif( Choice == 4):
+            LinePara()
+        elif ( Choice == 5):
             exit(0)
         else:
             print("INCORRECT COMMAND")
 
 
 def AutoMode():
-  if (not ParameterFileExists()):
+    if (not ParameterFileExists()):
         print("PLEASE RUN THE SETUP COMMAND BEFORE RUNNING SCRIPTS!")
+        exit(1)
+    print("")
+    Numparts =  MakeMenu(["Yes","No"],"Would you like use the recommended/default Numparts?") - 1
+    print("")
+    Seglength =  MakeMenu(["Yes","No"],"Would you like use the recommended/default Seglength?") - 1
+    print("")
+    Epsi =  MakeMenu(["Yes","No"],"Would you like use the recommended/default Epsilon?") - 1
+    print(" ")
+    ScriptSelection = MakeMenu(["Select Scripts","Run All"],"Please choose a run type.")
+    if(ScriptSelection == 1):
+        
+        for j in range(2,len(Line_Headers)-4):
+            print("Add "+str(j)+" to the list for: "+ Line_Headers[j])
+        selection = input("Please Enter a list in the following format : (example)--> 2,3,5,8 : ").split(",")
+        
+        selection.sort()
+        for i in selection:
+            if i == 4 or i == 5:
+                ScriptCalls[i](True,Numparts)
+            elif i == 3:
+                ScriptCalls[i](True,Epsi,Numparts)
+            elif i ==8:
+                ScriptCalls[i](True,Seglength)
+            else:
+                ScriptCalls[i](True)
+
+
+    else:
+        for i in range(2,12):
+            if i == 4 or i == 5:
+                ScriptCalls[i](True,Numparts)
+            elif i == 3:
+                ScriptCalls[i](True,Epsi,Numparts)
+            elif i ==8:
+                ScriptCalls[i](True,Seglength)
+            else:
+                ScriptCalls[i](True)
+
+
 
 def Clear():
     FinalCheck = MakeMenu(["Yes","No"],"Are you sure you want to delete the Research folder (and all its contents) and Parameter.txt?")
@@ -1390,25 +1504,15 @@ def Clear():
 ########################################## END OF MODES ####################################################################################
 
 
-#Setup()
-#RegularMode()
-#Clear()
-#SetupParameterFile() 
-#print(ParameterFileExists())
-#Script2(False)
-#call('cat Parameter.txt',shell=True)
-#Script3(False)
-#call('cat Parameter.txt',shell=True)
-#Script3B(False)
-#call('cat Parameter.txt',shell=True)
-#GetCytoFileStartAndEnd()
-#Script2(False)
-#ClearScript2()
-#ClearScript3B()
-#ClearScript4()
-#ShowMenu()
-#Script9(False)
 if __name__ == '__main__':
-    ShowMenu()
-
+    if (sys.argv[1] == "R"):
+        RegularMode()
+    elif (sys.argv[1] == "A"):
+        AutoMode()
+    elif( sys.argv[1] == "C"):
+        Clear()
+    elif( sys.argv[1] == "S"):
+        Setup()
+    else:
+        print("Sorry, you have entered an invalid parameter!")
 
