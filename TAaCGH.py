@@ -8,10 +8,10 @@ import sys,readline,os
 def delete_lines(lines):
     for i in range(0,lines+1):
         #cursor up one line
-        sys.stdout.write('\x1b[1A')
+        #sys.stdout.write('\x1b[1A')
         #delete last line
-        sys.stdout.write('\x1b[2K')
-
+        #sys.stdout.write('\x1b[2K')
+        pass
 
 ########################################### END OF CORE ############################################################################
 
@@ -24,13 +24,11 @@ def delete_lines(lines):
 # Script Set : 2 
 def Script2(ParameterFileUse):
     if(ParameterFileUse == True):
-        ParameterFile = open("Parameter.txt","r")
+        ParameterFile = open("Parameter.txt","r+",encoding='ascii')
         Lines = ParameterFile.readlines()
         ScriptParameters = Lines[2].split(" ") 
         ParameterFile.close()
-        
-
-        call('(cd Research/TAaCGH && R --vanilla --args '+ScriptParameters[1]+' '+ScriptParameter[2]+' '+ScriptParameters[3]+' '+ScriptParameters[4]+' '+ScriptParameters[5]+' < Research/TAaCGH/2_cgh_dictionary_cytoband.R)',shell=True)
+        call('(cd Research/TAaCGH && R --vanilla --args '+ScriptParameters[1]+' '+ScriptParameters[2]+' '+ScriptParameters[3]+' '+ScriptParameters[4]+' '+ScriptParameters[5]+' < 2_cgh_dictionary_cytoband.R)',shell=True)
         SetNumParts(ScriptParameters[2]) 
         SetSegLength(ScriptParameters[3])
         print("\n")
@@ -169,7 +167,7 @@ def Script3B(ParameterFileUse):
         if(RunAgain == 1):
             Script3B(ParameterFileUse)
         else:
-            CytoFile = open("Research/Data/"+DataSet+"/"+Subdir+"/"+DataSet+"_"+Subdir+"_dict_cyto.txt","r")
+            CytoFile = open("Research/Data/"+ScriptParameters[1]+"/"+ScriptParameters[2]+"/"+ScriptParameters[1]+"_"+ScriptParameters[2]+"_dict_cyto.txt","r")
             CytoLines = CytoFile.readlines()
             MinOfAvg05 = float("inf")
             for i in range(0,len(CytoLines)):
@@ -283,7 +281,7 @@ def Script4(ParameterFileUse,UseDefaultEpsilon,UseDefaultNumparts):
             Numparts = Lines[12].split(" ")[1]
 
 
-        for i in range(1,Numparts+1):
+        for i in range(1,int(Numparts)+1):
             ScriptCalls.append(Popen(['python','4_hom_stats_parts.py',ScriptParameters[1],ScriptParameters[2],str(i),str(Epsilon),ScriptParameters[5]],cwd='Research/TAaCGH',shell=False))
 	
         for j in ScriptCalls:
@@ -414,17 +412,15 @@ def Script5(ParameterFileUse,UseDefaultNumparts):
         ScriptParameters = Lines[6].split(" ") 
         ParameterFile.close()
         if(not UseDefaultNumparts):
-            Numparts = ScriptParameters[3]
+            Numparts = ScriptParameters[4]
         else:
             Numparts = Lines[12].split(" ")[1]
 
-
-       
-        ScriptCalls = []
-        for i in range(1,Numparts+1):
-            ScriptCalls.append(Popen(['R','--vanilla',"--args",ScriptParameters[1], ScriptParameters[2] ,ScriptParameters[3] ,str(i),ScriptParameters[5] ,ScriptParameters[6] ,ScriptParameters[7], "<","5_sig_pcalc_parts.R"],cwd='Research/TAaCGH',shell=False))
+        ScriptCall = []
+        for i in range(1,int(Numparts)+1):
+            ScriptCall.append(Popen(['R --vanilla --args '+ScriptParameters[1]+" "+ScriptParameters[2]+" "+ScriptParameters[3]+" "+str(i)+" "+ScriptParameters[5]+" "+ScriptParameters[6]+" "+ScriptParameters[7]+" < 5_sig_pcalc_parts.R"],cwd='Research/TAaCGH',shell=True))
 	
-        for j in ScriptCalls:
+        for j in ScriptCall:
             j.wait()
         
         print("\n")
@@ -544,7 +540,6 @@ def Script6(ParameterFileUse,UseDefaultNumparts):
             Numparts = ScriptParameters[3]
         else:
             Numparts = Lines[12].split(" ")[1]
-
 
         call("R --slave --args "+ScriptParameters[1]+" "+ScriptParameters[2]+" "+ScriptParameters[3]+" "+ScriptParameters[4]+" "+ScriptParameters[5]+" "+ScriptParameters[6]+" "+ScriptParameters[7]+"< 6_FDR.R",shell=True,cwd = "Research/TAaCGH")
         print("\n")
@@ -738,8 +733,7 @@ def Script8(ParameterFileUse):
         Lines = ParameterFile.readlines()
         ScriptParameters = Lines[9].split(" ") 
         ParameterFile.close()
-        
-        call("R --slave --args "+ScriptParameters[1]+" "+ScriptParameters[2]+" "+ScriptParameters[3]+" "+ScriptParameters[4]+" "+ScriptParameters[5]+" "+ScriptParameters[5]+" "+ScriptParameter[6]+"< 8_probesFDR.R",shell=True,cwd = "Research/TAaCGH")
+        call("R --slave --args "+ScriptParameters[1]+" "+ScriptParameters[2]+" "+ScriptParameters[3]+" "+ScriptParameters[4]+" "+ScriptParameters[5]+" "+ScriptParameters[5]+" "+ScriptParameters[6]+"< 8_probesFDR.R",shell=True,cwd = "Research/TAaCGH")
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
         if(RunAgain == 1):
@@ -842,7 +836,7 @@ def Script9(ParameterFileUse,UseDefaultSegLength):
         ParameterFile.close()
         
         if(not UseDefaultSegLength):
-            Numparts = ScriptParameter[2]
+            Numparts = ScriptParameters[2]
         else:
             Numparts = Lines[14].split(" ")[1]
 
@@ -1040,6 +1034,7 @@ def MakeMenu(OptionList,Prompt):
 
 def SetupParameterFile():
     ParameterFile = open("Parameter.txt","w")
+    ParameterFile.truncate(0)
     ParameterFile.write("PLEASE DO NOT EDIT THIS FINAL MANUALLY UNLESS YOU KNOW WHAT YOU ARE DOING!!\n")
     ParameterEdits = MakeMenu(["Yes","No"],"Would you like to pre-write the parameters for the scripts you will running[REQUIRED FOR AUTO MODE BUT NOT NECCESSARY FOR REGULAR MODE?")
     NumParts = None
@@ -1220,10 +1215,10 @@ def ShowMenu():
         if(os.path.isdir('Research/Results/'+i+'/CenterMass')):
             OutputFound.append(os.walk('Research/Results/'+i+'/CenterMass')[2])
     
-        if len(OutputFound) == 0:
-            print("[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[10])
-        else:
-            print("[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[10])
+    if len(OutputFound) == 0:
+        print("[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[10])
+    else:
+        print("[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[10])
     OutputFound = []
     OutputFound2 = []
    # Script 10
@@ -1236,15 +1231,15 @@ def ShowMenu():
                 OutputFound.append(i)
             elif ( NumberOfCols == 17):
                 OutputFound2.append(i)
-        if len(OutputFound) == 0:
-            print("[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[11])
-        else:
-            print("[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[11])
+    if len(OutputFound) == 0:
+        print("[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[11])
+    else:
+        print("[OUTPUT FOUND IN: "+str(OutputFound)+"] --> "+Lines[11])
         
-        if len(OutputFound2) == 0:
-            print("[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[12])
-        else:
-            print("[OUTPUT FOUND IN: "+str(OutputFound2)+"] --> "+Lines[12])
+    if len(OutputFound2) == 0:
+        print("[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[12])
+    else:
+        print("[OUTPUT FOUND IN: "+str(OutputFound2)+"] --> "+Lines[12])
             
 
     print(Lines[13]+'\n'+Lines[14]+'\n'+Lines[15])
@@ -1406,7 +1401,7 @@ def RegularMode():
                         Numparts =  MakeMenu(["Yes","No"],"Would you like use the recommended/default Numparts?") - 1
                     else:
                         Numparts = False
-
+                
                 if ScriptChoice == 3:
                     if len(Lines[13]) > 10:
                         Epsi = MakeMenu(["Yes","No"],"Would you like use the recommended/default epsilon?") - 1
@@ -1446,17 +1441,28 @@ def RegularMode():
         else:
             print("INCORRECT COMMAND")
 
+        """
+        "2":Script2,
+        "3":Script3,
+        "4":Script3B,
+        "5":Script4,
+        "6":Script5,
+        "7":Script6,
+        "8":Script7,
+        "9":Script8,
+        "10":Script9,
+        """
 
 def AutoMode():
     if (not ParameterFileExists()):
         print("PLEASE RUN THE SETUP COMMAND BEFORE RUNNING SCRIPTS!")
         exit(1)
     print("")
-    Numparts =  MakeMenu(["Yes","No"],"Would you like use the recommended/default Numparts?") - 1
+    Numparts =  MakeMenu(["Yes","No"],"Would you like use the recommended/default Numparts?") % 2
     print("")
-    Seglength =  MakeMenu(["Yes","No"],"Would you like use the recommended/default Seglength?") - 1
+    Seglength =  MakeMenu(["Yes","No"],"Would you like use the recommended/default Seglength?") % 2
     print("")
-    Epsi =  MakeMenu(["Yes","No"],"Would you like use the recommended/default Epsilon?") - 1
+    Epsi =  MakeMenu(["Yes","No"],"Would you like use the recommended/default Epsilon?") % 2
     print(" ")
     ScriptSelection = MakeMenu(["Select Scripts","Run All"],"Please choose a run type.")
     if(ScriptSelection == 1):
@@ -1465,28 +1471,29 @@ def AutoMode():
             print("Add "+str(j)+" to the list for: "+ Line_Headers[j])
         selection = input("Please Enter a list in the following format : (example)--> 2,3,5,8 : ").split(",")
         
+        selection = [int(i) for i in selection]
         selection.sort()
         for i in selection:
-            if i == 4 or i == 5:
-                ScriptCalls[i](True,Numparts)
-            elif i == 3:
-                ScriptCalls[i](True,Epsi,Numparts)
-            elif i ==8:
-                ScriptCalls[i](True,Seglength)
+            if i == 7 or i == 6:
+                ScriptCalls[str(i)](True,Numparts)
+            elif i == 5:
+                ScriptCalls[str(i)](True,Epsi,Numparts)
+            elif i ==10:
+                ScriptCalls[str(i)](True,Seglength)
             else:
-                ScriptCalls[i](True)
+                ScriptCalls[str(i)](True)
 
 
     else:
-        for i in range(2,12):
-            if i == 4 or i == 5:
-                ScriptCalls[i](True,Numparts)
-            elif i == 3:
-                ScriptCalls[i](True,Epsi,Numparts)
-            elif i ==8:
-                ScriptCalls[i](True,Seglength)
+        for i in range(2,11):
+            if i == 7 or i == 6:
+                ScriptCalls[str(i)](True,Numparts)
+            elif i == 5:
+                ScriptCalls[str(i)](True,Epsi,Numparts)
+            elif i ==10:
+                ScriptCalls[str(i)](True,Seglength)
             else:
-                ScriptCalls[i](True)
+                ScriptCalls[str(i)](True)
 
 
 
@@ -1505,6 +1512,9 @@ def Clear():
 
 
 if __name__ == '__main__':
+    if(len(sys.argv) == 1):
+        print("Sorry, you have entered an invalid parameter!")
+        exit(0)
     if (sys.argv[1] == "R"):
         RegularMode()
     elif (sys.argv[1] == "A"):
