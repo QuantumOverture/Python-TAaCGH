@@ -36,7 +36,7 @@ def Script2(ParameterFileUse):
         if(RunAgain == 1):
             Script2(ParameterFileUse)
         else:
-            print("====================== COMPLETED SCRIPT 2 ======================")
+            print("====================== COMPLETED SCRIPT 1 ======================")
     else:
         DataSet = ""
         while(DataSet == "" or os.path.isdir('Research/Data/'+DataSet) == False):
@@ -108,7 +108,7 @@ def ClearScript2():
 # Script Set : 3
 def Script3(ParameterFileUse):
     if(ParameterFileUse == True):
-        ParameterFile = open("Parameter.txt","r")
+        ParameterFile = open("Parameter.txt","r",encoding='ascii')
         Lines = ParameterFile.readlines()
         ScriptParameters = Lines[3].split(" ") 
         ParameterFile.close()
@@ -156,7 +156,7 @@ def ClearScript3():
 # Script Set : 3B
 def Script3B(ParameterFileUse):
      if(ParameterFileUse == True):
-        ParameterFile = open("Parameter.txt","r")
+        ParameterFile = open("Parameter.txt","r",encoding='ascii')
         Lines = ParameterFile.readlines()
         ScriptParameters = Lines[4].split(" ") 
         ParameterFile.close()
@@ -264,7 +264,7 @@ def ClearScript3B():
 def Script4(ParameterFileUse,UseDefaultEpsilon,UseDefaultNumparts):
     # USE POPEN IN SUBPROCESS!!!
     if(ParameterFileUse == True):
-        ParameterFile = open("Parameter.txt","r")
+        ParameterFile = open("Parameter.txt","r",encoding='ascii')
         Lines = ParameterFile.readlines()
         ScriptParameters = Lines[5].split(" ") 
         ParameterFile.close()
@@ -290,7 +290,7 @@ def Script4(ParameterFileUse,UseDefaultEpsilon,UseDefaultNumparts):
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
         if(RunAgain == 1):
-            Script4(ParameterFileUse)
+            Script4(ParameterFileUse,UseDefaultEpsilon,UseDefaultNumparts)
         else:
             print("====================== COMPLETED SCRIPT 4 ======================")
     else:
@@ -380,7 +380,7 @@ def Script4(ParameterFileUse,UseDefaultEpsilon,UseDefaultNumparts):
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
         if(RunAgain == 1):
-            Script4(ParameterFileUse)
+            Script4(ParameterFileUse,UseDefaultEpsilon,UseDefaultNumparts)
         else:
             print("====================== COMPLETED SCRIPT 4 ======================")
  
@@ -407,7 +407,7 @@ def ClearScript4():
 # Script Set : 5
 def Script5(ParameterFileUse,UseDefaultNumparts):
       if(ParameterFileUse == True):
-        ParameterFile = open("Parameter.txt","r")
+        ParameterFile = open("Parameter.txt","r",encoding='ascii')
         Lines = ParameterFile.readlines()
         ScriptParameters = Lines[6].split(" ") 
         ParameterFile.close()
@@ -426,7 +426,7 @@ def Script5(ParameterFileUse,UseDefaultNumparts):
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
         if(RunAgain == 1):
-            Script5(ParameterFileUse)
+            Script5(ParameterFileUse,UseDefaultNumparts)
         else:
             print("====================== COMPLETED SCRIPT 5 ======================")
             return "SUCCESSFULL RUN" 
@@ -509,7 +509,7 @@ def Script5(ParameterFileUse,UseDefaultNumparts):
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
         if(RunAgain == 1):
-            Script5(ParameterFileUse)
+            Script5(ParameterFileUse,UseDefaultNumparts)
         else:
             print("====================== COMPLETED SCRIPT 5 ======================")
  
@@ -531,7 +531,7 @@ def ClearScript5():
 # Script Set : 6
 def Script6(ParameterFileUse,UseDefaultNumparts):
    if(ParameterFileUse == True):
-        ParameterFile = open("Parameter.txt","r")
+        ParameterFile = open("Parameter.txt","r",encoding='ascii')
         Lines = ParameterFile.readlines()
         ScriptParameters = Lines[7].split(" ") 
         ParameterFile.close()
@@ -545,7 +545,7 @@ def Script6(ParameterFileUse,UseDefaultNumparts):
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
         if(RunAgain == 1):
-            Script6(ParameterFileUse)
+            Script6(ParameterFileUse,UseDefaultNumparts)
         else:
             print("====================== COMPLETED SCRIPT 6 ======================")
    else:
@@ -622,7 +622,7 @@ def Script6(ParameterFileUse,UseDefaultNumparts):
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
         if(RunAgain == 1):
-            Script6(ParameterFileUse)
+            Script6(ParameterFileUse,UseDefaultNumparts)
         else:
             print("====================== COMPLETED SCRIPT 6 ======================")
  
@@ -648,7 +648,7 @@ def ClearScript6():
 # Script Set : 7
 def Script7(ParameterFileUse):
    if(ParameterFileUse == True):
-        ParameterFile = open("Parameter.txt","r")
+        ParameterFile = open("Parameter.txt","r",encoding='ascii')
         Lines = ParameterFile.readlines()
         ScriptParameters = Lines[8].split(" ") 
         ParameterFile.close()
@@ -729,7 +729,7 @@ def ClearScript7():
 # Script Set : 8 
 def Script8(ParameterFileUse):
    if(ParameterFileUse == True):
-        ParameterFile = open("Parameter.txt","r")
+        ParameterFile = open("Parameter.txt","r",encoding='ascii')
         Lines = ParameterFile.readlines()
         ScriptParameters = Lines[9].split(" ") 
         ParameterFile.close()
@@ -830,7 +830,7 @@ def ClearScript8():
 # Script Set : 9 
 def Script9(ParameterFileUse,UseDefaultSegLength):
    if(ParameterFileUse == True):
-        ParameterFile = open("Parameter.txt","r")
+        ParameterFile = open("Parameter.txt","r",encoding='ascii')
         Lines = ParameterFile.readlines()
         ScriptParameters = Lines[10].split(" ") 
         ParameterFile.close()
@@ -840,12 +840,11 @@ def Script9(ParameterFileUse,UseDefaultSegLength):
         else:
             Numparts = Lines[14].split(" ")[1]
 
-
-        call("R --slave --args "+ScriptParameters[1]+" "+ScriptParameters[2]+" "+ScriptParameters[3]+" "+ScriptParameters[4]+" "+ScriptParameters[5]+" "+ScriptParameters[6]+"< 9_mean_diff_perm_NoOut.R",shell=True,cwd = "Research/TAaCGH")
+        call("R --slave --args "+ScriptParameters[1]+" "+ScriptParameters[2]+" "+ScriptParameters[3]+" "+ScriptParameters[4]+" "+ScriptParameters[5]+" "+ScriptParameters[6]+" < 9_mean_diff_perm_NoOut.R",shell=True,cwd = "Research/TAaCGH")
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
         if(RunAgain == 1):
-            Script9(ParameterFileUse)
+            Script9(ParameterFileUse,UseDefaultSegLength)
         else:
             print("====================== COMPLETED SCRIPT 9 ======================")
    else:
@@ -931,7 +930,7 @@ def Script9(ParameterFileUse,UseDefaultSegLength):
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
         if(RunAgain == 1):
-            Script9(ParameterFileUse)
+            Script9(ParameterFileUse,UseDefaultSegLength)
         else:
             print("====================== COMPLETED SCRIPT 9 ======================")
 
