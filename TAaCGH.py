@@ -24,7 +24,7 @@ def delete_lines(lines):
 # Script Set : 2 
 def Script2(ParameterFileUse):
     if(ParameterFileUse == True):
-        ParameterFile = open("Parameter.txt","r+",encoding='ascii')
+        ParameterFile = open("Parameter.txt","r",encoding='ascii')
         Lines = ParameterFile.readlines()
         ScriptParameters = Lines[2].split(" ") 
         ParameterFile.close()
@@ -36,7 +36,7 @@ def Script2(ParameterFileUse):
         if(RunAgain == 1):
             Script2(ParameterFileUse)
         else:
-            print("====================== COMPLETED SCRIPT 1 ======================")
+            print("====================== COMPLETED SCRIPT 2 ======================")
     else:
         DataSet = ""
         while(DataSet == "" or os.path.isdir('Research/Data/'+DataSet) == False):
@@ -255,6 +255,7 @@ def ClearScript3B():
         for i in range(0,len(Current_Lines)):
             Current_Lines[i] = '\t'.join(Current_Lines[i].split('\t')[0:7])+'\n'
         CytoFile.truncate(0)
+        ParameterFile.seek(0)
         CytoFile.writelines(Current_Lines)
         CytoFile.close()
 
@@ -315,7 +316,7 @@ def Script4(ParameterFileUse,UseDefaultEpsilon,UseDefaultNumparts):
         print("\n\n")
 
         NumParts = ""
-        ParameterFile = open("Parameter.txt","r")
+        ParameterFile = open("Parameter.txt","r",encoding='ascii')
         Lines = ParameterFile.readlines()
         ParameterFile.close()
         SkipStep = False
@@ -339,7 +340,7 @@ def Script4(ParameterFileUse,UseDefaultEpsilon,UseDefaultNumparts):
         print("\n\n")
 
         Epsilon = ""
-        ParameterFile = open("Parameter.txt","r")
+        ParameterFile = open("Parameter.txt","r",encoding='ascii')
         Lines = ParameterFile.readlines()
         ParameterFile.close()
         SkipStep = False
@@ -456,7 +457,7 @@ def Script5(ParameterFileUse,UseDefaultNumparts):
         print("\n\n") 
         
         NumParts = ""
-        ParameterFile = open("Parameter.txt","r")
+        ParameterFile = open("Parameter.txt","r",encoding='ascii')
         Lines = ParameterFile.readlines()
         ParameterFile.close()
         SkipStep = False
@@ -572,7 +573,7 @@ def Script6(ParameterFileUse,UseDefaultNumparts):
         print("\n\n") 
         
         NumParts = ""
-        ParameterFile = open("Parameter.txt","r")
+        ParameterFile = open("Parameter.txt","r",encoding='ascii')
         Lines = ParameterFile.readlines()
         ParameterFile.close()
         SkipStep = False
@@ -859,7 +860,7 @@ def Script9(ParameterFileUse,UseDefaultSegLength):
         print("\n\n") 
  
         SegLength = ""
-        ParameterFile = open("Parameter.txt","r")
+        ParameterFile = open("Parameter.txt","r",encoding='ascii')
         Lines = ParameterFile.readlines()
         ParameterFile.close()
         SkipStep = False
@@ -925,7 +926,7 @@ def Script9(ParameterFileUse,UseDefaultSegLength):
             print(" ")
         print("\n\n")
 
-        call("R --slave --args "+DataSet+" "+SegLength+" "+Phenotype+" "+str(Perm)+" "+str(sig) +" "+str(Seed)+" <9_mean_diff_perm_NoOut.R",shell=True,cwd = "Research/TAaCGH")
+        call("R --slave --args "+DataSet+" "+str(SegLength)+" "+Phenotype+" "+str(Perm)+" "+str(sig) +" "+str(Seed)+" <9_mean_diff_perm_NoOut.R",shell=True,cwd = "Research/TAaCGH")
         
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
@@ -1032,8 +1033,9 @@ def MakeMenu(OptionList,Prompt):
     return int(UserInput)
 
 def SetupParameterFile():
-    ParameterFile = open("Parameter.txt","w")
+    ParameterFile = open("Parameter.txt","w",encoding='ascii')
     ParameterFile.truncate(0)
+    ParameterFile.seek(0)
     ParameterFile.write("PLEASE DO NOT EDIT THIS FINAL MANUALLY UNLESS YOU KNOW WHAT YOU ARE DOING!!\n")
     ParameterEdits = MakeMenu(["Yes","No"],"Would you like to pre-write the parameters for the scripts you will running[REQUIRED FOR AUTO MODE BUT NOT NECCESSARY FOR REGULAR MODE?")
     NumParts = None
@@ -1046,7 +1048,7 @@ def SetupParameterFile():
     ParameterFile.write("Script 1 not part of suite\n")
     for i in range(2,len(Line_Headers)-4):
         CurrentParameters = ParametersForEachScript[i].split(" ")
-        ParameterFile.write(Line_Headers[i]+" ")
+        ParameterFile.write(Line_Headers[i]+": ")
         if(EditEnabled):
             for j in range(0,len(CurrentParameters)):
                 if(NumParts !=None):
@@ -1071,7 +1073,7 @@ def SetupParameterFile():
 
                 print("\n")
             print("\n\n")
-            ParameterFile.write("\n")
+        ParameterFile.write("\n")
     ParameterFile.write("10_class_pat_CM.R\n")
     ParameterFile.write("11_class_pat_seg.R\n")
     ParameterFile.write("NumParts: \n")
@@ -1080,23 +1082,26 @@ def SetupParameterFile():
     ParameterFile.close()
 
 def LinePara():
-    ParameterFile = open("Parameter.txt","w")
-
-    Line = MakeMenu([Line_Headers[i] for i in range(2,len(Line_Headers)-4)],"Please choose a line you would like to re-write") + 1
-
+    ParameterFile = open("Parameter.txt","r+")
+    FileLine = ParameterFile.readlines()
+    # LEFT OFF HERE
+    Line = MakeMenu([Line_Headers[i] for i in range(2,len(Line_Headers)-4)],"Please choose a line you would like to re-write") + 1 
+    ParameterFile.truncate(0)
+    ParameterFile.seek(0)
     CurrentParameters = ParametersForEachScript[Line].split(" ")
-    ParameterFile.write(Line_Headers[Line]+" ")
+    FileLine[Line]=Line_Headers[Line]+" "
         
     for j in range(0,len(CurrentParameters)):   
         print(Line_Headers[Line] +  ": Instructions -> " + ParameterHelp[Line][j])
         Parameter = input("Please Enter Parameter for: "+CurrentParameters[j]+ " -> ")
-        ParameterFile.write(Parameter+" ")
+        FileLine[Line] += Parameter+" "
         print("\n")
-
+    FileLine[Line] += "\n" 
+    ParameterFile.writelines(FileLine)
     ParameterFile.close()
 
 def ShowMenu():
-    ParameterFile = open("Parameter.txt", "r")
+    ParameterFile = open("Parameter.txt", "r",encoding='ascii')
     Lines = ParameterFile.readlines()
     #Script 1 -- USER CHOOSES TO RUN AS NOT A NECCESSARY SCRIPT --
     # Core Data Below --> For performance
@@ -1252,26 +1257,29 @@ def ParameterFileExists():
 
 
 def SetNumParts(NewNum):
-    ParameterFile = open("Parameter.txt","r+")
+    ParameterFile = open("Parameter.txt","r+",encoding='ascii')
     Lines = ParameterFile.readlines()
     ParameterFile.truncate(0)
-    Lines[12] = "NumParts: " + str(NewNum)+'\n'
+    ParameterFile.seek(0)
+    Lines[13] = "NumParts: " + str(NewNum)+'\n'
     ParameterFile.writelines(Lines)
     ParameterFile.close()
 
 def SetEpsilon(NewNum):
-    ParameterFile = open("Parameter.txt","r+")
+    ParameterFile = open("Parameter.txt","r+",encoding='ascii')
     Lines = ParameterFile.readlines()
     ParameterFile.truncate(0)
-    Lines[13] = "Epsilon: " + str(NewNum)+'\n'
+    ParameterFile.seek(0)
+    Lines[14] = "Epsilon: " + str(NewNum)+'\n'
     ParameterFile.writelines(Lines)
     ParameterFile.close()
 
 def SetSegLength(NewNum):
-    ParameterFile = open("Parameter.txt","r+")
+    ParameterFile = open("Parameter.txt","r+",encoding='ascii')
     Lines = ParameterFile.readlines()
     ParameterFile.truncate(0)
-    Lines[14] = "SegLength: " + str(NewNum)+'\n'
+    ParameterFile.seek(0)
+    Lines[15] = "SegLength: " + str(NewNum)+'\n'
     ParameterFile.writelines(Lines)
     ParameterFile.close()
 
@@ -1289,7 +1297,7 @@ def GetCytoFileStartAndEnd():
     for i in next(os.walk('Research/Data'))[1]:
         for j in next(os.walk('Research/Data/'+i))[1]:
             if(os.path.isfile('Research/Data/'+i+'/'+j+'/'+i+'_'+j+'_dict_cyto.txt')):
-                CytoFile = open('Research/Data/'+i+'/'+j+'/'+i+'_'+j+'_dict_cyto.txt',"r")
+                CytoFile = open('Research/Data/'+i+'/'+j+'/'+i+'_'+j+'_dict_cyto.txt',"r",encoding='ascii')
                 Lines = CytoFile.readlines()
                 One = Lines[1].split('\t')
                 Last = Lines[len(Lines)-1].split('\t')
@@ -1388,49 +1396,52 @@ def RegularMode():
     while ( True ):
         ShowMenu() 
         print("")
-        Choice =  MakeMenu(["Run Script", "Delete Script Output", "Reset Entire Parameter.txt", "Reset Specific Parameter.txt Line","Exit Script"],"Please Choose one :")
+        Choice =  MakeMenu(["Run Script", "Delete Script Output", "Reset Entire Parameter.txt", "Reset Specific Parameter.txt Line","Exit Script"],"Please Choose one :") 
         if(Choice == 1):
             print("")
-            ScriptChoice = MakeMenu([Line_Headers[i] for i in range(2,11)],"Which Script would you like to run?")
+            ScriptChoice = MakeMenu([Line_Headers[i] for i in range(2,11)],"Which Script would you like to run?") + 1
             AutoMode = MakeMenu(["Yes","No"],"Would you like to autofill Parameters?")
             if(AutoMode == 1):
                 ParameterFileUse = True
-                if ScriptChoice in [3,4,5]:
-                    if len(Lines[12]) > 11:
-                        Numparts =  MakeMenu(["Yes","No"],"Would you like use the recommended/default Numparts?") - 1
+                if ScriptChoice in [5,6,7]:
+                    if len(Lines[13]) > 11:
+                        Numparts =  MakeMenu(["Yes","No"],"Would you like use the recommended/default Numparts?") % 2
                     else:
                         Numparts = False
                 
-                if ScriptChoice == 3:
-                    if len(Lines[13]) > 10:
-                        Epsi = MakeMenu(["Yes","No"],"Would you like use the recommended/default epsilon?") - 1
+                if ScriptChoice == 5:
+                    if len(Lines[14]) > 10:
+                        Epsi = MakeMenu(["Yes","No"],"Would you like use the recommended/default epsilon?") % 2
                     else:
                         Epsi = False
-                    ScriptCalls[str(ScriptChoice+1)](ParameterFileUse,Epsi,Numparts)
+                    ScriptCalls[str(ScriptChoice)](ParameterFileUse,Epsi,Numparts)
 
                 
-                if ScriptChoice == 8:
-                    if len(Lines[14]) > 12:
-                        seg = MakeMenu(["Yes","No"],"Would you like use the recommended/default SegLength?") - 1
+                elif ScriptChoice == 10:
+                    if len(Lines[15]) > 12:
+                        seg = MakeMenu(["Yes","No"],"Would you like use the recommended/default SegLength?") % 2
                     else:
                         seg = False
-                    ScriptCalls[str(ScriptChoice+1)](ParameterFileUse,seg)
+                    ScriptCalls[str(ScriptChoice)](ParameterFileUse,seg)
 
-                if ScriptChoice == 4 or ScriptChoice == 5:
-                    ScriptCalls[str(ScriptChoice+1)](ParameterFileUse,Numparts)
+                elif ScriptChoice == 6 or ScriptChoice == 7:
+                    ScriptCalls[str(ScriptChoice)](ParameterFileUse,Numparts)
                 else:
-                    ScriptCalls[str(ScriptChoice+1)](ParameterFileUse)
+                    ScriptCalls[str(ScriptChoice)](ParameterFileUse)
 
 
 
             else:
-                ScriptCalls[str(ScriptChoice+1)](False)
-
-            
+                if ScriptChoice == 6 or ScriptChoice == 7 or ScriptChoice == 10:
+                    ScriptCalls[str(ScriptChoice)](False,False)
+                elif ScriptChoice == 5:
+                    ScriptCalls[str(ScriptChoice)](False,False,False)
+                else:
+                    ScriptCalls[str(ScriptChoice)](False)
 
         elif (Choice == 2):
-            ScriptChoice = MakeMenu([Line_Headers[i] for i in range(2,11)],"Which Script's output would you like to delete?")
-            DelScript[str(ScriptChoice+1)]()
+            ScriptChoice = MakeMenu([Line_Headers[i] for i in range(2,11)],"Which Script's output would you like to delete?") + 1
+            DelScript[str(ScriptChoice)]()
         elif( Choice == 3):
             SetupParameterFile()
         elif( Choice == 4):
@@ -1439,18 +1450,6 @@ def RegularMode():
             exit(0)
         else:
             print("INCORRECT COMMAND")
-
-        """
-        "2":Script2,
-        "3":Script3,
-        "4":Script3B,
-        "5":Script4,
-        "6":Script5,
-        "7":Script6,
-        "8":Script7,
-        "9":Script8,
-        "10":Script9,
-        """
 
 def AutoMode():
     if (not ParameterFileExists()):
