@@ -34,7 +34,11 @@ def Script2(ParameterFileUse):
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
         if(RunAgain == 1):
-            Script2(ParameterFileUse)
+            AutoMode = MakeMenu(["Yes","No"],"Would you like to autofill Parameters?")
+            if AutoMode == 1:
+                Script2(True)
+            else:
+                Script2(False)
         else:
             print("====================== COMPLETED SCRIPT 2 ======================")
     else:
@@ -85,7 +89,11 @@ def Script2(ParameterFileUse):
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
         if(RunAgain == 1):
-            Script2(ParameterFileUse)
+            AutoMode = MakeMenu(["Yes","No"],"Would you like to autofill Parameters?")
+            if AutoMode == 1:
+                Script2(True)
+            else:
+                Script2(False)
         else:
             print("====================== COMPLETED SCRIPT 2 ======================")
  
@@ -118,7 +126,11 @@ def Script3(ParameterFileUse):
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
         if(RunAgain == 1):
-            Script3(ParameterFileUse)
+            AutoMode = MakeMenu(["Yes","No"],"Would you like to autofill Parameters?")
+            if AutoMode == 1:
+                Script3(True)
+            else:
+                Script3(False)
         else:
             print("====================== COMPLETED SCRIPT 3 ======================")
     else:
@@ -134,7 +146,11 @@ def Script3(ParameterFileUse):
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
         if(RunAgain == 1):
-            Script3(ParameterFileUse)
+            AutoMode = MakeMenu(["Yes","No"],"Would you like to autofill Parameters?")
+            if AutoMode == 1:
+                Script3(True)
+            else:
+                Script3(False)
         else:
             print("====================== COMPLETED SCRIPT 3 ======================")
  
@@ -165,7 +181,11 @@ def Script3B(ParameterFileUse):
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
         if(RunAgain == 1):
-            Script3B(ParameterFileUse)
+            AutoMode = MakeMenu(["Yes","No"],"Would you like to autofill Parameters?")
+            if AutoMode == 1:
+                Script3B(True)
+            else:
+                Script3B(False)
         else:
             CytoFile = open("Research/Data/"+ScriptParameters[1]+"/"+ScriptParameters[2]+"/"+ScriptParameters[1]+"_"+ScriptParameters[2]+"_dict_cyto.txt","r")
             CytoLines = CytoFile.readlines()
@@ -208,7 +228,11 @@ def Script3B(ParameterFileUse):
         
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
         if(RunAgain == 1):
-            Script3B(ParameterFileUse)
+            AutoMode = MakeMenu(["Yes","No"],"Would you like to autofill Parameters?")
+            if AutoMode == 1:
+                Script3B(True)
+            else:
+                Script3(False)
         else:
             CytoFile = open("Research/Data/"+DataSet+"/"+Subdir+"/"+DataSet+"_"+Subdir+"_dict_cyto.txt","r")
             CytoLines = CytoFile.readlines()
@@ -292,7 +316,14 @@ def Script4(ParameterFileUse,UseDefaultEpsilon,UseDefaultNumparts):
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
         if(RunAgain == 1):
-            Script4(ParameterFileUse,UseDefaultEpsilon,UseDefaultNumparts)
+            AutoMode = MakeMenu(["Yes","No"],"Would you like to autofill Parameters?")
+            Epsi = MakeMenu(["Yes","No"],"Would you like use the recommended/default epsilon?") % 2
+            Nparts = MakeMenu(["Yes","No"],"Would you like use the recommended/default Num Parts?") % 2
+            if AutoMode == 1:
+                Script4(True,Epsi,Nparts)
+            else:
+                Script4(False,Epsi,Nparts)
+
         else:
             print("====================== COMPLETED SCRIPT 4 ======================")
     else:
@@ -382,7 +413,14 @@ def Script4(ParameterFileUse,UseDefaultEpsilon,UseDefaultNumparts):
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
         if(RunAgain == 1):
-            Script4(ParameterFileUse,UseDefaultEpsilon,UseDefaultNumparts)
+            AutoMode = MakeMenu(["Yes","No"],"Would you like to autofill Parameters?")
+            Epsi = MakeMenu(["Yes","No"],"Would you like use the recommended/default epsilon?") % 2
+            Nparts = MakeMenu(["Yes","No"],"Would you like use the recommended/default Num Parts?") % 2
+            if AutoMode == 1:
+                Script4(True,Epsi,Nparts)
+            else:
+                Script4(False,Epsi,Nparts)
+
         else:
             print("====================== COMPLETED SCRIPT 4 ======================")
  
@@ -428,7 +466,13 @@ def Script5(ParameterFileUse,UseDefaultNumparts):
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
         if(RunAgain == 1):
-            Script5(ParameterFileUse,UseDefaultNumparts)
+            AutoMode = MakeMenu(["Yes","No"],"Would you like to autofill Parameters?")
+            Nparts = MakeMenu(["Yes","No"],"Would you like use the recommended/default Num Parts?") % 2
+            if AutoMode == 1:
+                Script5(True,Nparts)
+            else:
+                Script5(False,Nparts)
+
         else:
             print("====================== COMPLETED SCRIPT 5 ======================")
 
@@ -510,7 +554,13 @@ def Script5(ParameterFileUse,UseDefaultNumparts):
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
         if(RunAgain == 1):
-            Script5(ParameterFileUse,UseDefaultNumparts)
+            AutoMode = MakeMenu(["Yes","No"],"Would you like to autofill Parameters?")
+            Nparts = MakeMenu(["Yes","No"],"Would you like use the recommended/default Num Parts?") % 2
+            if AutoMode == 1:
+                Script5(True,Nparts)
+            else:
+                Script5(False,Nparts)
+
         else:
             print("====================== COMPLETED SCRIPT 5 ======================")
  
@@ -545,7 +595,14 @@ def Script6(ParameterFileUse,UseDefaultNumparts):
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
         if(RunAgain == 1):
-            Script6(ParameterFileUse,UseDefaultNumparts)
+            
+            AutoMode = MakeMenu(["Yes","No"],"Would you like to autofill Parameters?")
+            Nparts = MakeMenu(["Yes","No"],"Would you like use the recommended/default Num Parts?") % 2
+            if AutoMode == 1:
+                Script6(True,Nparts)
+            else:
+                Script6(False,Nparts)
+
         else:
             print("====================== COMPLETED SCRIPT 6 ======================")
    else:
@@ -622,7 +679,13 @@ def Script6(ParameterFileUse,UseDefaultNumparts):
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
         if(RunAgain == 1):
-            Script6(ParameterFileUse,UseDefaultNumparts)
+            AutoMode = MakeMenu(["Yes","No"],"Would you like to autofill Parameters?")
+            Nparts = MakeMenu(["Yes","No"],"Would you like use the recommended/default Num Parts?") % 2
+            if AutoMode == 1:
+                Script6(True,Nparts)
+            else:
+                Script6(False,Nparts)
+
         else:
             print("====================== COMPLETED SCRIPT 6 ======================")
  
@@ -657,8 +720,12 @@ def Script7(ParameterFileUse):
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
         if(RunAgain == 1):
-            Script7(ParameterFileUse)
-            return 
+            AutoMode = MakeMenu(["Yes","No"],"Would you like to autofill Parameters?")
+            if AutoMode == 1:
+                Script7(True)
+            else:
+                Script7(False)
+
         else:
             print("====================== COMPLETED SCRIPT 7 ======================")
    else:
@@ -706,7 +773,12 @@ def Script7(ParameterFileUse):
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
         if(RunAgain == 1):
-            Script7(ParameterFileUse)
+            AutoMode = MakeMenu(["Yes","No"],"Would you like to autofill Parameters?")
+            if AutoMode == 1:
+                Script7(True)
+            else:
+                Script7(False)
+
         else:
             print("====================== COMPLETED SCRIPT 7 ======================")
  
@@ -737,7 +809,12 @@ def Script8(ParameterFileUse):
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
         if(RunAgain == 1):
-            Script8(ParameterFileUse)
+            AutoMode = MakeMenu(["Yes","No"],"Would you like to autofill Parameters?")
+            if AutoMode == 1:
+                Script8(True)
+            else:
+                Script8(False)
+
         else:
             print("====================== COMPLETED SCRIPT 8 ======================")
    else:
@@ -810,7 +887,11 @@ def Script8(ParameterFileUse):
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
         if(RunAgain == 1):
-            Script8(ParameterFileUse)
+            AutoMode = MakeMenu(["Yes","No"],"Would you like to autofill Parameters?")
+            if AutoMode == 1:
+                Script8(True)
+            else:
+                Script8(False)
         else:
             print("====================== COMPLETED SCRIPT 8 ======================")
 
@@ -844,7 +925,13 @@ def Script9(ParameterFileUse,UseDefaultSegLength):
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
         if(RunAgain == 1):
-            Script9(ParameterFileUse,UseDefaultSegLength)
+            AutoMode = MakeMenu(["Yes","No"],"Would you like to autofill Parameters?")
+            SegLength = MakeMenu(["Yes","No"],"Would you like use the recommended/default SegLength?") % 2
+            if AutoMode == 1:
+                Script9(True,SegLength)
+            else:
+                Script9(False,SegLength)
+
         else:
             print("====================== COMPLETED SCRIPT 9 ======================")
    else:
@@ -930,7 +1017,13 @@ def Script9(ParameterFileUse,UseDefaultSegLength):
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
         if(RunAgain == 1):
-            Script9(ParameterFileUse,UseDefaultSegLength)
+            AutoMode = MakeMenu(["Yes","No"],"Would you like to autofill Parameters?")
+            SegLength = MakeMenu(["Yes","No"],"Would you like use the recommended/default SegLength?") % 2
+            if AutoMode == 1:
+                Script9(True,SegLength)
+            else:
+                Script9(False,SegLength)
+
         else:
             print("====================== COMPLETED SCRIPT 9 ======================")
 
