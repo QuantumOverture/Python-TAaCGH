@@ -26,7 +26,7 @@ def Script2(ParameterFileUse):
     if(ParameterFileUse == True):
         ParameterFile = open("Parameter.txt","r",encoding='ascii')
         Lines = ParameterFile.readlines()
-        ScriptParameters = Lines[2].split(" ") 
+        ScriptParameters = Lines[2].split(" ")
         ParameterFile.close()
         call('(cd Research/TAaCGH && R --vanilla --args '+ScriptParameters[1]+' '+ScriptParameters[2]+' '+ScriptParameters[3]+' '+ScriptParameters[4]+' '+ScriptParameters[5]+' < 2_cgh_dictionary_cytoband.R)',shell=True)
         SetNumParts(ScriptParameters[2]) 
@@ -273,13 +273,14 @@ def Script4(ParameterFileUse,UseDefaultEpsilon,UseDefaultNumparts):
         if(not UseDefaultEpsilon):
             Epsilon = ScriptParameters[3]
         else:
-            Epsilon = Lines[13].split(" ")[1]
+            Epsilon = Lines[14].split(" ")[1].replace("\n","")
         ScriptCalls = []
         
         if(not UseDefaultNumparts):
             Numparts = ScriptParameters[3]
         else:
-            Numparts = Lines[12].split(" ")[1]
+            Numparts = Lines[13].split(" ")[1].replace("\n","")
+
 
 
         for i in range(1,int(Numparts)+1):
@@ -320,11 +321,11 @@ def Script4(ParameterFileUse,UseDefaultEpsilon,UseDefaultNumparts):
         Lines = ParameterFile.readlines()
         ParameterFile.close()
         SkipStep = False
-        if(len(Lines[12].split(" ")) == 2):
-            print("Number of Parts is set to: "+str(Lines[12].split(" ")[1]))
+        if(len(Lines[13].split(" ")) == 2):
+            print("Number of Parts is set to: "+str(Lines[13].split(" ")[1]))
             Option = MakeMenu(["Yes","No"],"Would you like to use this value[HIGHLY RECOMMENDED]?")
             if(Option == 1):
-                NumParts = int(Lines[12].split(" ")[1].replace("\n",""))
+                NumParts = int(Lines[13].split(" ")[1].replace("\n",""))
                 SkipStep = True
         
         if(SkipStep == False):
@@ -344,11 +345,11 @@ def Script4(ParameterFileUse,UseDefaultEpsilon,UseDefaultNumparts):
         Lines = ParameterFile.readlines()
         ParameterFile.close()
         SkipStep = False
-        if(len(Lines[13].split(" ")) == 2):
-            print("Epsilon is set to: "+str(Lines[13].split(" ")[1]))
+        if(len(Lines[14].split(" ")) == 2):
+            print("Epsilon is set to: "+str(Lines[14].split(" ")[1]))
             Option = MakeMenu(["Yes","No"],"Would you like to use this value[HIGHLY RECOMMENDED]?")
             if(Option == 1):
-                Epsilon = float(Lines[13].split(" ")[1].replace("\n",""))
+                Epsilon = float(Lines[14].split(" ")[1].replace("\n",""))
                 SkipStep = True
         
         if(SkipStep == False):
@@ -415,7 +416,7 @@ def Script5(ParameterFileUse,UseDefaultNumparts):
         if(not UseDefaultNumparts):
             Numparts = ScriptParameters[4]
         else:
-            Numparts = Lines[12].split(" ")[1]
+            Numparts = Lines[13].split(" ")[1].replace("\n","")
 
         ScriptCall = []
         for i in range(1,int(Numparts)+1):
@@ -430,7 +431,6 @@ def Script5(ParameterFileUse,UseDefaultNumparts):
             Script5(ParameterFileUse,UseDefaultNumparts)
         else:
             print("====================== COMPLETED SCRIPT 5 ======================")
-            return "SUCCESSFULL RUN" 
 
       else:
         Param = ""
@@ -461,11 +461,11 @@ def Script5(ParameterFileUse,UseDefaultNumparts):
         Lines = ParameterFile.readlines()
         ParameterFile.close()
         SkipStep = False
-        if(len(Lines[12].split(" ")) == 2):
-            print("Number of Parts is set to: "+str(Lines[12].split(" ")[1]))
+        if(len(Lines[13].split(" ")) == 2):
+            print("Number of Parts is set to: "+str(Lines[13].split(" ")[1]))
             Option = MakeMenu(["Yes","No"],"Would you like to use this value[HIGHLY RECOMMENDED]?")
             if(Option == 1):
-                NumParts = int(Lines[12].split(" ")[1].replace("\n",""))
+                NumParts = int(Lines[13].split(" ")[1].replace("\n",""))
                 SkipStep = True
         
         if(SkipStep == False):
@@ -538,11 +538,10 @@ def Script6(ParameterFileUse,UseDefaultNumparts):
         ParameterFile.close()
         
         if(not UseDefaultNumparts):
-            Numparts = ScriptParameters[3]
+            Numparts = ScriptParameters[4]
         else:
-            Numparts = Lines[12].split(" ")[1]
-
-        call("R --slave --args "+ScriptParameters[1]+" "+ScriptParameters[2]+" "+ScriptParameters[3]+" "+ScriptParameters[4]+" "+ScriptParameters[5]+" "+ScriptParameters[6]+" "+ScriptParameters[7]+"< 6_FDR.R",shell=True,cwd = "Research/TAaCGH")
+            Numparts = Lines[13].split(" ")[1].replace('\n',"")
+        call("R --slave --args "+ScriptParameters[1]+" "+ScriptParameters[2]+" "+ScriptParameters[3]+" "+Numparts+" "+ScriptParameters[5]+" "+ScriptParameters[6]+" "+ScriptParameters[7]+" < 6_FDR.R",shell=True,cwd = "Research/TAaCGH")
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
         if(RunAgain == 1):
@@ -577,11 +576,11 @@ def Script6(ParameterFileUse,UseDefaultNumparts):
         Lines = ParameterFile.readlines()
         ParameterFile.close()
         SkipStep = False
-        if(len(Lines[12].split(" ")) == 2):
-            print("Number of Parts is set to: "+str(Lines[12].split(" ")[1]))
+        if(len(Lines[13].split(" ")) == 2):
+            print("Number of Parts is set to: "+str(Lines[13].split(" ")[1]))
             Option = MakeMenu(["Yes","No"],"Would you like to use this value[HIGHLY RECOMMENDED]?")
             if(Option == 1):
-                NumParts = int(Lines[12].split(" ")[1].replace("\n",""))
+                NumParts = int(Lines[13].split(" ")[1].replace("\n",""))
                 SkipStep = True
         
         if(SkipStep == False):
@@ -606,19 +605,19 @@ def Script6(ParameterFileUse,UseDefaultNumparts):
         Sig = ""
         while(Sig == ""):
             print("Help: "+ParameterHelp[7][5])
-            Sig = input("Please enter a valid data set: ")
+            Sig = input("Please enter a valid sig: ")
             print(" ")
         print("\n\n") 
 
         Subdir = ""
-        while(Subdir == "" or os.path.isdir('Research/Data/'+DataSet) == False):
+        while(Subdir == "" or os.path.isdir('Research/Data/'+File) == False):
             print("Help: "+ParameterHelp[7][6])
             Subdir = input("Please enter a valid subdir: ")
             print(" ")
         print("\n\n") 
         
 
-        call("R --slave --args "+File+" "+Parameter+" "+Phenotype+" "+NumParts+" "+Perm+" "+Sig+" "+Subdir +"< 6_FDR.R",shell=True,cwd = "Research/TAaCGH")
+        call("R --slave --args "+File+" "+Parameter+" "+Phenotype+" "+str(NumParts)+" "+Perm+" "+Sig+" "+Subdir +"< 6_FDR.R",shell=True,cwd = "Research/TAaCGH")
         
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
@@ -654,7 +653,7 @@ def Script7(ParameterFileUse):
         ScriptParameters = Lines[8].split(" ") 
         ParameterFile.close()
         
-        call("R --slave --args "+ScriptParameters[1]+" "+ScriptParameters[2]+" "+ScriptParameters[3]+" "+ScriptParameters[4]+" "+ScriptParameters[5]+"< 7_vis_curves.R",shell=True,cwd = "Research/TAaCGH")
+        call("R --slave --args "+ScriptParameters[1]+" "+ScriptParameters[2]+" "+ScriptParameters[3]+" "+ScriptParameters[4]+" "+ScriptParameters[5]+" < 7_vis_curves.R",shell=True,cwd = "Research/TAaCGH")
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
         if(RunAgain == 1):
@@ -837,11 +836,11 @@ def Script9(ParameterFileUse,UseDefaultSegLength):
         ParameterFile.close()
         
         if(not UseDefaultSegLength):
-            Numparts = ScriptParameters[2]
+            SegLength = ScriptParameters[2]
         else:
-            Numparts = Lines[14].split(" ")[1]
+            SegLength = Lines[15].split(" ")[1].replace("\n","")
 
-        call("R --slave --args "+ScriptParameters[1]+" "+ScriptParameters[2]+" "+ScriptParameters[3]+" "+ScriptParameters[4]+" "+ScriptParameters[5]+" "+ScriptParameters[6]+" < 9_mean_diff_perm_NoOut.R",shell=True,cwd = "Research/TAaCGH")
+        call("R --slave --args "+ScriptParameters[1]+" "+SegLength+" "+ScriptParameters[3]+" "+ScriptParameters[4]+" "+ScriptParameters[5]+" "+ScriptParameters[6]+" < 9_mean_diff_perm_NoOut.R",shell=True,cwd = "Research/TAaCGH")
         print("\n")
         RunAgain = MakeMenu(["Yes","No"],"Would you like to run again?")
         if(RunAgain == 1):
@@ -864,11 +863,11 @@ def Script9(ParameterFileUse,UseDefaultSegLength):
         Lines = ParameterFile.readlines()
         ParameterFile.close()
         SkipStep = False
-        if(len(Lines[14].split(" ")) == 2):
-            print("SeglLength is set to: "+str(Lines[14].split(" ")[1]))
+        if(len(Lines[15].split(" ")) == 2):
+            print("SeglLength is set to: "+str(Lines[15].split(" ")[1]))
             Option = MakeMenu(["Yes","No"],"Would you like to use this value[HIGHLY RECOMMENDED]?")
             if(Option == 1):
-                SegLength = int(Lines[14].split(" ")[1].replace("\n",""))
+                SegLength = int(Lines[15].split(" ")[1].replace("\n",""))
                 SkipStep = True
         
         if(SkipStep == False):
@@ -1089,7 +1088,7 @@ def LinePara():
     ParameterFile.truncate(0)
     ParameterFile.seek(0)
     CurrentParameters = ParametersForEachScript[Line].split(" ")
-    FileLine[Line]=Line_Headers[Line]+" "
+    FileLine[Line]=Line_Headers[Line]+": "
         
     for j in range(0,len(CurrentParameters)):   
         print(Line_Headers[Line] +  ": Instructions -> " + ParameterHelp[Line][j])
