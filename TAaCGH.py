@@ -699,7 +699,8 @@ def ClearScript6():
     OutputFound = []
     for i in range(0,len(DataSets)):
         for j in SubDirects[i]:
-            if(os.path.isfile('Research/Data/'+DataSets[i]+'/'+j+'/'+DataSets[i]+'_FDR.txt') and os.path.isfile('Research/Data/'+DataSets[i]+'/'+j+'/'+DataSets[i]+'_FDRsigtxt') ):
+            print('Research/Data/'+DataSets[i]+'/'+j+'/'+DataSets[i]+'_FDR(sig).txt')
+            if(os.path.isfile('Research/Data/'+DataSets[i]+'/'+j+'/'+DataSets[i]+'_FDR.txt') and os.path.isfile('Research/Data/'+DataSets[i]+'/'+j+'/'+DataSets[i]+'_FDRsig.txt') ):
                     OutputFound.append('Research/Data/'+DataSets[i]+'/'+j+'/'+DataSets[i])
 
     if len(OutputFound) != 0:
@@ -790,7 +791,7 @@ def ClearScript7():
         for j in CurrentSubDirects:
             if(os.path.isdir('Research/Results/'+i+'/'+j+'/vis/curves/B0')):
                 OutputFound.append('Research/Results/'+i+'/'+j+'/vis/curves/B0')
-            elif(os.path.isdir('Research/Results/'+i+'/'+j+'/vis/curves/B1')):
+            if(os.path.isdir('Research/Results/'+i+'/'+j+'/vis/curves/B1')):
                 OutputFound.append('Research/Results/'+i+'/'+j+'/vis/curves/B1')
 
     if len(OutputFound) != 0:
@@ -897,7 +898,7 @@ def Script8(ParameterFileUse):
 
 def ClearScript8():
     OutputFound = []
-    for i in CurrentResults:
+    for i in next(os.walk('Research/Results'))[1]:
        #Results/SET/significance/pvals
        if( os.path.isfile('Research/Results/'+i+'/significance/pvals/'+i+'_Probes_FDR.txt') and os.path.isfile('Research/Results/'+i+'/significance/pvals/'+i+'_Probes_FDRsig.txt')):
            OutputFound.append(['Research/Results/'+i+'/significance/pvals/'+i+'_Probes_FDR.txt','Research/Results/'+i+'/significance/pvals/'+i+'_Probes_FDRsig.txt'])
@@ -1106,7 +1107,7 @@ Line_Headers = [ "DO NOT USE THIS INDEX","1_impute_aCGH.R","2_cgh_dictionary_cyt
 def MakeMenu(OptionList,Prompt):
     counter = 1
     for i in OptionList:
-        print("Enter "+str(counter)+" for : "+i)
+        print("Enter "+str(counter)+" for : "+str(i))
         counter+=1
     UserInput = input(Prompt+": ")
     try:
@@ -1274,7 +1275,7 @@ def ShowMenu():
     OutputFound = []
     for i in range(0,len(DataSets)):
         for j in SubDirects[i]:
-            if(os.path.isfile('Research/Data/'+DataSets[i]+'/'+j+'/'+DataSets[i]+'_FDR.txt') and os.path.isfile('Research/Data/'+DataSets[i]+'/'+j+'/'+DataSets[i]+'_FDRsigtxt') ):
+            if(os.path.isfile('Research/Data/'+DataSets[i]+'/'+j+'/'+DataSets[i]+'_FDR.txt') and os.path.isfile('Research/Data/'+DataSets[i]+'/'+j+'/'+DataSets[i]+'_FDRsig.txt') ):
                     OutputFound.append(DataSets[i]+"/"+j)
 
     if len(OutputFound) == 0:
@@ -1309,7 +1310,7 @@ def ShowMenu():
    # List files in ~/Reseach/Results/SET/CenterMass
     for i in CurrentResults:
         if(os.path.isdir('Research/Results/'+i+'/CenterMass')):
-            OutputFound.append(os.walk('Research/Results/'+i+'/CenterMass')[2])
+            OutputFound.append(next(os.walk('Research/Results/'+i+'/CenterMass'))[2])
     
     if len(OutputFound) == 0:
         print("[OUTPUT FILES MISSING - HAVE YOU RUN THE SCRIPT?] --> "+Lines[10])
@@ -1587,6 +1588,7 @@ def AutoMode():
 
 
 
+
 def Clear():
     FinalCheck = MakeMenu(["Yes","No"],"Are you sure you want to delete the Research folder (and all its contents) and Parameter.txt?")
     if( FinalCheck == 1):
@@ -1597,6 +1599,16 @@ def Clear():
     elif( FinalCheck == 2):
         print("Deletion Aborted")
         exit(0)
+
+
+def Cluster():
+    # Check if Research folder is in scratch and Check if Rsearch sets and scripts are in Scratch/TAaCGHSetupData
+    if (!os.path.isdir('~/scratch/Research')):
+        print("It seems you do not have a a Research directory in a scratch directory?")
+        SetupScratch = MakeMenu(["Yes","No"],"Would you like to setup one")
+        if( SetupScratch == 1):
+            SetupClusterFiles()
+            
 
 ########################################## END OF MODES ####################################################################################
 
@@ -1613,6 +1625,8 @@ if __name__ == '__main__':
         Clear()
     elif( sys.argv[1] == "S"):
         Setup()
+    elif ( sys.argv[1] == "C"):
+        Cluster()
     else:
         print("Sorry, you have entered an invalid parameter!")
 
