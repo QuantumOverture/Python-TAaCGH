@@ -1601,13 +1601,22 @@ def Clear():
         exit(0)
 
 
-def Cluster():
+def Cluster(Commands):
     # Check if Research folder is in scratch and Check if Rsearch sets and scripts are in Scratch/TAaCGHSetupData
     if (!os.path.isdir('~/scratch/Research')):
         print("It seems you do not have a a Research directory in a scratch directory?")
         SetupScratch = MakeMenu(["Yes","No"],"Would you like to setup one")
         if( SetupScratch == 1):
             SetupClusterFiles()
+
+    #  Special BATCH generation for script 4 and 5
+    if(Commands.index("-m")):
+        GenBATCHNoFile(Commands)
+    else:
+        GenBATCHFile(Commands)
+    ShowGenBATCH()
+    Send_Keep_Run_BATCH(Commands)
+
             
 
 ########################################## END OF MODES ####################################################################################
@@ -1626,7 +1635,7 @@ if __name__ == '__main__':
     elif( sys.argv[1] == "S"):
         Setup()
     elif ( sys.argv[1] == "C"):
-        Cluster()
+        Cluster(sys.argv[1:])
     else:
         print("Sorry, you have entered an invalid parameter!")
 
