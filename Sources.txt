@@ -1,2 +1,2 @@
 - https://stackoverflow.com/questions/19596750/is-there-a-way-to-clear-your-printed-text-in-python
-- 
+- https://stackoverflow.com/questions/36926077/how-to-pass-an-array-to-python-through-command-line
