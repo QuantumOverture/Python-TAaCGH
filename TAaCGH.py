@@ -1125,8 +1125,8 @@ def MakeMenu(OptionList,Prompt):
     delete_lines(counter)
     return int(UserInput)
 
-def SetupParameterFile():
-    ParameterFile = open("Parameter.txt","w",encoding='ascii')
+def SetupParameterFile(Super_Directory):
+    ParameterFile = open(Super_Directory+"Parameter.txt","w",encoding='ascii')
     ParameterFile.truncate(0)
     ParameterFile.seek(0)
     ParameterFile.write("PLEASE DO NOT EDIT THIS FINAL MANUALLY UNLESS YOU KNOW WHAT YOU ARE DOING!!\n")
@@ -1177,7 +1177,7 @@ def SetupParameterFile():
 def LinePara():
     ParameterFile = open("Parameter.txt","r+")
     FileLine = ParameterFile.readlines()
-    # LEFT OFF HERE
+    # Re-write a line in the parameterfile
     Line = MakeMenu([Line_Headers[i] for i in range(2,len(Line_Headers)-4)],"Please choose a line you would like to re-write") + 1 
     ParameterFile.truncate(0)
     ParameterFile.seek(0)
@@ -1401,76 +1401,76 @@ def GetCytoFileStartAndEnd():
 ################################################ END UTILITIES #######################################################################
 
 ########################################## MODES ####################################################################################
-def Setup():
+def Setup(Super_Directory = './'):
     print("SET UP STARTED")
     # Create Core Directories
-    call('mkdir Research',shell=True)
-    call('mkdir Research/Data',shell=True)
+    call('mkdir '+Super_Directory+'Research',shell=True)
+    call('mkdir '+Super_Directory+'Research/Data',shell=True)
     DataSetNameSetup = MakeMenu(["Yes","No"],"Would you like to make a directory(or multiple directories) for a Data set(s) within the Data directory?")
     if(DataSetNameSetup == 1):
         ContinueMakingDirectories = True
         while( ContinueMakingDirectories ):
             Name = input("Please enter a name for the Data Set directory:")
             print("You Entered:" + Name)
-            call('mkdir Research/Data/'+Name,shell=True)
+            call('mkdir '+Super_Directory+'Research/Data/'+Name,shell=True)
             Option = MakeMenu(["Yes","No"], "Would you like to make more Data Set directories?")
             if(Option == 2):
                 ContinueMakingDirectories = False
     
-    call('mkdir Research/TAaCGH',shell=True)
-    call('mkdir Research/Results',shell=True)
+    call('mkdir '+Super_Directory+'Research/TAaCGH',shell=True)
+    call('mkdir '+Super_Directory+' Research/Results',shell=True)
 
 
     # Add Read and Execute Permissions to Core Scripts (needed for cp command and running of scripts)
-    call('chmod +rx TAaCGH-master_June_24_2019/1_impute_aCGH.R',shell=True)
-    call('chmod +rx TAaCGH-master_June_24_2019/2_cgh_dictionary_cytoband.R',shell=True)
-    call('chmod +rx TAaCGH-master_June_24_2019/3_Transposed_aCGH.R',shell=True)
-    call('chmod +rx TAaCGH-master_June_24_2019/3b_dist_Q05.R',shell=True)
-    call('chmod +rx TAaCGH-master_June_24_2019/4_hom_stats_parts.py',shell=True)
-    call('chmod +rx TAaCGH-master_June_24_2019/5_sig_pcalc_parts.R',shell=True)
-    call('chmod +rx TAaCGH-master_June_24_2019/6_FDR.R',shell=True)
-    call('chmod +rx TAaCGH-master_June_24_2019/7_vis_curves.R',shell=True)
-    call('chmod +rx TAaCGH-master_June_24_2019/8_probesFDR.R',shell=True)
-    call('chmod +rx TAaCGH-master_June_24_2019/9_mean_diff_perm_NoOut.R',shell=True)
-    call('chmod +rx TAaCGH-master_June_24_2019/10_class_pat_CM.R',shell=True)
-    call('chmod +rx TAaCGH-master_June_24_2019/11_class_pat_seg.R',shell=True)
-    call('chmod +rx TAaCGH-master_June_24_2019/functions_cgh.py',shell=True)
-    call('chmod +rx TAaCGH-master_June_24_2019/functions_data_processing.R',shell=True)
-    call('chmod +rx TAaCGH-master_June_24_2019/functions_io.py',shell=True)
-    call('chmod +rx TAaCGH-master_June_24_2019/functions_sig.R',shell=True)
-    call('chmod +rx TAaCGH-master_June_24_2019/plex.jar',shell=True)
+    call('chmod +rx '+Super_Directory+'TAaCGH-master_June_24_2019/1_impute_aCGH.R',shell=True)
+    call('chmod +rx  '+Super_Directory+'TAaCGH-master_June_24_2019/2_cgh_dictionary_cytoband.R',shell=True)
+    call('chmod +rx  '+Super_Directory+'TAaCGH-master_June_24_2019/3_Transposed_aCGH.R',shell=True)
+    call('chmod +rx  '+Super_Directory+'TAaCGH-master_June_24_2019/3b_dist_Q05.R',shell=True)
+    call('chmod +rx  '+Super_Directory+'TAaCGH-master_June_24_2019/4_hom_stats_parts.py',shell=True)
+    call('chmod +rx  '+Super_Directory+'TAaCGH-master_June_24_2019/5_sig_pcalc_parts.R',shell=True)
+    call('chmod +rx  '+Super_Directory+'TAaCGH-master_June_24_2019/6_FDR.R',shell=True)
+    call('chmod +rx  '+Super_Directory+'TAaCGH-master_June_24_2019/7_vis_curves.R',shell=True)
+    call('chmod +rx  '+Super_Directory+'TAaCGH-master_June_24_2019/8_probesFDR.R',shell=True)
+    call('chmod +rx  '+Super_Directory+'TAaCGH-master_June_24_2019/9_mean_diff_perm_NoOut.R',shell=True)
+    call('chmod +rx  '+Super_Directory+'TAaCGH-master_June_24_2019/10_class_pat_CM.R',shell=True)
+    call('chmod +rx  '+Super_Directory+'TAaCGH-master_June_24_2019/11_class_pat_seg.R',shell=True)
+    call('chmod +rx  '+Super_Directory+'TAaCGH-master_June_24_2019/functions_cgh.py',shell=True)
+    call('chmod +rx  '+Super_Directory+'TAaCGH-master_June_24_2019/functions_data_processing.R',shell=True)
+    call('chmod +rx  '+Super_Directory+'TAaCGH-master_June_24_2019/functions_io.py',shell=True)
+    call('chmod +rx  '+Super_Directory+'TAaCGH-master_June_24_2019/functions_sig.R',shell=True)
+    call('chmod +rx  '+Super_Directory+'TAaCGH-master_June_24_2019/plex.jar',shell=True)
 
     #chmod +rx TAaCGH-master_June_24_2019/Readme.pdf
-    call('chmod +rx TAaCGH-master_June_24_2019/ind_prof_origpat_local_sect.R',shell=True)
-    call('chmod +rx TAaCGH-master_June_24_2019/ind_prof_origpat_local.R',shell=True)
-    call('chmod +rx TAaCGH-master_June_24_2019/vis_avg_betti_curves.R',shell=True)
+    call('chmod +rx  '+Super_Directory+'TAaCGH-master_June_24_2019/ind_prof_origpat_local_sect.R',shell=True)
+    call('chmod +rx  '+Super_Directory+'TAaCGH-master_June_24_2019/ind_prof_origpat_local.R',shell=True)
+    call('chmod +rx  '+Super_Directory+'TAaCGH-master_June_24_2019/vis_avg_betti_curves.R',shell=True)
 
     # Copy files from downloaded directory to required directory
-    call('cp TAaCGH-master_June_24_2019/1_impute_aCGH.R Research/TAaCGH',shell=True)
-    call('cp TAaCGH-master_June_24_2019/2_cgh_dictionary_cytoband.R Research/TAaCGH',shell=True)
-    call('cp TAaCGH-master_June_24_2019/3_Transposed_aCGH.R Research/TAaCGH',shell=True)
-    call('cp TAaCGH-master_June_24_2019/3b_dist_Q05.R Research/TAaCGH',shell=True)
-    call('cp TAaCGH-master_June_24_2019/4_hom_stats_parts.py Research/TAaCGH',shell=True)
-    call('cp TAaCGH-master_June_24_2019/5_sig_pcalc_parts.R Research/TAaCGH',shell=True)
-    call('cp TAaCGH-master_June_24_2019/6_FDR.R Research/TAaCGH',shell=True)
-    call('cp TAaCGH-master_June_24_2019/7_vis_curves.R Research/TAaCGH',shell=True)
-    call('cp TAaCGH-master_June_24_2019/8_probesFDR.R Research/TAaCGH',shell=True)
-    call('cp TAaCGH-master_June_24_2019/9_mean_diff_perm_NoOut.R Research/TAaCGH',shell=True)
-    call('cp TAaCGH-master_June_24_2019/10_class_pat_CM.R Research/TAaCGH',shell=True)
-    call('cp TAaCGH-master_June_24_2019/11_class_pat_seg.R Research/TAaCGH',shell=True)
-    call('cp TAaCGH-master_June_24_2019/functions_cgh.py Research/TAaCGH',shell=True)
-    call('cp TAaCGH-master_June_24_2019/functions_data_processing.R Research/TAaCGH',shell=True)
-    call('cp TAaCGH-master_June_24_2019/functions_io.py Research/TAaCGH',shell=True)
-    call('cp TAaCGH-master_June_24_2019/functions_sig.R Research/TAaCGH',shell=True)
-    call('cp TAaCGH-master_June_24_2019/plex.jar Research/TAaCGH',shell=True)
+    call('cp  '+Super_Directory+'TAaCGH-master_June_24_2019/1_impute_aCGH.R '+Super_Directory+'Research/TAaCGH',shell=True)
+    call('cp  '+Super_Directory+'TAaCGH-master_June_24_2019/2_cgh_dictionary_cytoband.R '+Super_Directory+'Research/TAaCGH',shell=True)
+    call('cp  '+Super_Directory+'TAaCGH-master_June_24_2019/3_Transposed_aCGH.R '+Super_Directory+'Research/TAaCGH',shell=True)
+    call('cp  '+Super_Directory+'TAaCGH-master_June_24_2019/3b_dist_Q05.R '+Super_Directory+'Research/TAaCGH',shell=True)
+    call('cp  '+Super_Directory+'TAaCGH-master_June_24_2019/4_hom_stats_parts.py  '+Super_Directory+'Research/TAaCGH',shell=True)
+    call('cp  '+Super_Directory+'TAaCGH-master_June_24_2019/5_sig_pcalc_parts.R  '+Super_Directory+'Research/TAaCGH',shell=True)
+    call('cp  '+Super_Directory+'TAaCGH-master_June_24_2019/6_FDR.R  '+Super_Directory+'Research/TAaCGH',shell=True)
+    call('cp  '+Super_Directory+'TAaCGH-master_June_24_2019/7_vis_curves.R  '+Super_Directory+'Research/TAaCGH',shell=True)
+    call('cp  '+Super_Directory+'TAaCGH-master_June_24_2019/8_probesFDR.R  '+Super_Directory+'Research/TAaCGH',shell=True)
+    call('cp  '+Super_Directory+'TAaCGH-master_June_24_2019/9_mean_diff_perm_NoOut.R  '+Super_Directory+'Research/TAaCGH',shell=True)
+    call('cp  '+Super_Directory+'TAaCGH-master_June_24_2019/10_class_pat_CM.R  '+Super_Directory+'Research/TAaCGH',shell=True)
+    call('cp  '+Super_Directory+'TAaCGH-master_June_24_2019/11_class_pat_seg.R  '+Super_Directory+'Research/TAaCGH',shell=True)
+    call('cp  '+Super_Directory+'TAaCGH-master_June_24_2019/functions_cgh.py  '+Super_Directory+'Research/TAaCGH',shell=True)
+    call('cp  '+Super_Directory+'TAaCGH-master_June_24_2019/functions_data_processing.R  '+Super_Directory+'Research/TAaCGH',shell=True)
+    call('cp  '+Super_Directory+'TAaCGH-master_June_24_2019/functions_io.py  '+Super_Directory+'Research/TAaCGH',shell=True)
+    call('cp  '+Super_Directory+'TAaCGH-master_June_24_2019/functions_sig.R  '+Super_Directory+'Research/TAaCGH',shell=True)
+    call('cp  '+Super_Directory+'TAaCGH-master_June_24_2019/plex.jar  '+Super_Directory+'Research/TAaCGH',shell=True)
     #cp TAaCGH-master_June_24_2019/Readme.pdf Research/TAaCGH
-    call('cp TAaCGH-master_June_24_2019/ind_prof_origpat_local_sect.R Research/TAaCGH',shell=True)
-    call('cp TAaCGH-master_June_24_2019/ind_prof_origpat_local.R Research/TAaCGH',shell=True)
-    call('cp TAaCGH-master_June_24_2019/vis_avg_betti_curves.R Research/TAaCGH',shell=True)
+    call('cp  '+Super_Directory+'TAaCGH-master_June_24_2019/ind_prof_origpat_local_sect.R  '+Super_Directory+'Research/TAaCGH',shell=True)
+    call('cp  '+Super_Directory+'TAaCGH-master_June_24_2019/ind_prof_origpat_local.R  '+Super_Directory+'Research/TAaCGH',shell=True)
+    call('cp  '+Super_Directory+'TAaCGH-master_June_24_2019/vis_avg_betti_curves.R  '+Super_Directory+'Research/TAaCGH',shell=True)
      #cp TAaCGH-master_June_24_2019/ Research/TAaCGH
-    call('touch Parameter.txt',shell=True)
+    call('touch '+ Super_Directory+'Parameter.txt',shell=True)
     
-    SetupParameterFile() # neccessary for auto mode notification here as well
+    SetupParameterFile(SuperDirectory) # neccessary for auto mode notification here as well
    
 
 def RegularMode():  
@@ -1607,19 +1607,31 @@ def Cluster(Commands):
         print("It seems you do not have a a Research directory in a scratch directory?")
         SetupScratch = MakeMenu(["Yes","No"],"Would you like to setup one")
         if( SetupScratch == 1):
-            SetupClusterFiles()
+            Setup("~/scratch/TAaCGH/")
 
-    #  Special BATCH generation for script 4 and 5
+    #  Special BATCH generation for script 4 and 5 --> For all script runs have an extra parameter that tells it what super direct. it is working with
     if(Commands.index("-m")):
+        #  For Command line
         GenBATCHNoFile(Commands)
     else:
+        #  For file reading
         GenBATCHFile(Commands)
     ShowGenBATCH()
     Send_Keep_Run_BATCH(Commands)
 
             
-
 ########################################## END OF MODES ####################################################################################
+
+
+
+#########################################  CLUSTER MODES ###################################################################################
+
+
+
+
+
+######################################## END OF CLUSTER MODES ##############################################################################
+
 
 
 if __name__ == '__main__':
