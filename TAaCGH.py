@@ -1470,7 +1470,7 @@ def Setup(Super_Directory = './'):
      #cp TAaCGH-master_June_24_2019/ Research/TAaCGH
     call('touch '+ Super_Directory+'Parameter.txt',shell=True)
     
-    SetupParameterFile(SuperDirectory) # neccessary for auto mode notification here as well
+    SetupParameterFile(Super_Directory) # neccessary for auto mode notification here as well
    
 
 def RegularMode():  
@@ -1600,7 +1600,6 @@ def Clear():
         print("Deletion Aborted")
         exit(0)
 
-
 def Cluster(Commands):
     # Check if Research folder is in scratch and Check if Rsearch sets and scripts are in Scratch/TAaCGHSetupData
     if (!os.path.isdir('~/scratch/Research')):
@@ -1622,15 +1621,17 @@ def Cluster(Commands):
             
 ########################################## END OF MODES ####################################################################################
 
-
-
-#########################################  CLUSTER MODES ###################################################################################
-
-
-
-
-
-######################################## END OF CLUSTER MODES ##############################################################################
+def GenBATCHNoFile(Commands):
+    #  Assue All variables have been set
+    call("touch "+ NameOfBatchFile)
+    BATCHFILE = open(Super_Directory+""+NameOfBatchFile,"w",encoding='ascii')
+    BATCHFILE.truncate(0)
+    BATCHFILE.seek(0)
+    
+    for i in Commands:
+        #Make Sure it selects the correct parammeters
+        # Write to file and simplify user -input like for input and output files 
+    BATCHFILE.close()
 
 
 
