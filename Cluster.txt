@@ -1,0 +1,12 @@
+
+username = mdaud123
+email = mdaud@ucdavis.edu
+Name = Mohammad Ismail Daud
+uid = 1433547
+gid = 1433547
+sponsor = biomathgrp
+key = cluster_key.pub
+
+Your public key has a valid format. Good.
+
+We will activate your account and let you know when you can login

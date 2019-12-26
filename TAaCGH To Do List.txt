@@ -1,0 +1,44 @@
+
+Requests
+========
+
+
+
+
+
+Work In Progress
+================
+[ ] Fix Setup and Script so that they work with stuff being in a scratch file --> Give option for another directory if needed
+[X] Fix SetupParameterFile to work in scratch directory
+[ ] Fix Clear 
+[ ] Remove make menu
+
+
+Guide
+================
+
+Script 4 --> ParameterFile,DefaultEps,Default numparts
+script 5 --> ParameterFile,Default numparts
+Script 6 --> Default numparts
+Script 9 --> default seglength
+
+
+Enter 1 for : 2_cgh_dictionary_cytoband.R
+Enter 2 for : 3_Transposed_aCGH.R
+Enter 3 for : 3b_dist_Q05.R
+Enter 4 for : 4_hom_stats_parts.py
+Enter 5 for : 5_sig_pcalc_parts.R
+Enter 6 for : 6_FDR.R
+Enter 7 for : 7_vis_curves.R
+Enter 8 for : 8_probesFDR.R
+Enter 9 for : 9_mean_diff.perm.R
+
+
+
+Checks
+================
+
+
+
+
+
