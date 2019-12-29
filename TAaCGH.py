@@ -1125,12 +1125,15 @@ def MakeMenu(OptionList,Prompt):
     delete_lines(counter)
     return int(UserInput)
 
-def SetupParameterFile(Super_Directory):
+def SetupParameterFile(Super_Directory, ClusterModeOverride=False):
     ParameterFile = open(Super_Directory+"Parameter.txt","w",encoding='ascii')
     ParameterFile.truncate(0)
     ParameterFile.seek(0)
     ParameterFile.write("PLEASE DO NOT EDIT THIS FINAL MANUALLY UNLESS YOU KNOW WHAT YOU ARE DOING!!\n")
-    ParameterEdits = MakeMenu(["Yes","No"],"Would you like to pre-write the parameters for the scripts you will running[REQUIRED FOR AUTO MODE BUT NOT NECCESSARY FOR REGULAR MODE?")
+    if ClusterModeOverride :
+        ParameterEdits = 1
+    else:
+        ParameterEdits = MakeMenu(["Yes","No"],"Would you like to pre-write the parameters for the scripts you will running[REQUIRED FOR AUTO MODE BUT NOT NECCESSARY FOR REGULAR MODE?")
     NumParts = None
     SegLength = None
     Eps = None
@@ -1404,21 +1407,21 @@ def GetCytoFileStartAndEnd():
 def Setup(Super_Directory = './'):
     print("SET UP STARTED")
     # Create Core Directories
-    call('mkdir '+Super_Directory+'Research',shell=True)
-    call('mkdir '+Super_Directory+'Research/Data',shell=True)
+    call('mkdir -p '+Super_Directory+'Research',shell=True)
+    call('mkdir -p '+Super_Directory+'Research/Data',shell=True)
     DataSetNameSetup = MakeMenu(["Yes","No"],"Would you like to make a directory(or multiple directories) for a Data set(s) within the Data directory?")
     if(DataSetNameSetup == 1):
         ContinueMakingDirectories = True
         while( ContinueMakingDirectories ):
             Name = input("Please enter a name for the Data Set directory:")
             print("You Entered:" + Name)
-            call('mkdir '+Super_Directory+'Research/Data/'+Name,shell=True)
+            call('mkdir -p '+Super_Directory+'Research/Data/'+Name,shell=True)
             Option = MakeMenu(["Yes","No"], "Would you like to make more Data Set directories?")
             if(Option == 2):
                 ContinueMakingDirectories = False
     
-    call('mkdir '+Super_Directory+'Research/TAaCGH',shell=True)
-    call('mkdir '+Super_Directory+' Research/Results',shell=True)
+    call('mkdir -p '+Super_Directory+'Research/TAaCGH',shell=True)
+    call('mkdir -p '+Super_Directory+'Research/Results',shell=True)
 
 
     # Add Read and Execute Permissions to Core Scripts (needed for cp command and running of scripts)
@@ -1470,7 +1473,7 @@ def Setup(Super_Directory = './'):
      #cp TAaCGH-master_June_24_2019/ Research/TAaCGH
     call('touch '+ Super_Directory+'Parameter.txt',shell=True)
     
-    SetupParameterFile(Super_Directory) # neccessary for auto mode notification here as well
+    SetupParameterFile(Super_Directory, True) # neccessary for auto mode notification here as well
    
 
 def RegularMode():  
@@ -1600,39 +1603,30 @@ def Clear():
         print("Deletion Aborted")
         exit(0)
 
-def Cluster(Commands):
-    # Check if Research folder is in scratch and Check if Rsearch sets and scripts are in Scratch/TAaCGHSetupData
-    if (!os.path.isdir('~/scratch/Research')):
-        print("It seems you do not have a a Research directory in a scratch directory?")
-        SetupScratch = MakeMenu(["Yes","No"],"Would you like to setup one")
-        if( SetupScratch == 1):
-            Setup("~/scratch/TAaCGH/")
 
-    #  Special BATCH generation for script 4 and 5 --> For all script runs have an extra parameter that tells it what super direct. it is working with
-    if(Commands.index("-m")):
-        #  For Command line
-        GenBATCHNoFile(Commands)
-    else:
-        #  For file reading
-        GenBATCHFile(Commands)
-    ShowGenBATCH()
-    Send_Keep_Run_BATCH(Commands)
+#=========================CLUSTER SPECIFIC FUNCTIONS==================
+def ClusterRun(Args):
+    # JOB ARRAY IS PARRALLEL! EMBARSSINGLY PARRALLEL PARIDIGM.
+    # Funnel  input for script functions --> Parameter File
+    pass
 
-            
-########################################## END OF MODES ####################################################################################
+def ClusterSetup():
+    # Setup everything for user (assume srun has been used here)
+    Setup() 
+    # Setup ClusterParameters for user
+    ClusterParameterSetup()
 
-def GenBATCHNoFile(Commands):
-    #  Assue All variables have been set
-    call("touch "+ NameOfBatchFile)
-    BATCHFILE = open(Super_Directory+""+NameOfBatchFile,"w",encoding='ascii')
-    BATCHFILE.truncate(0)
-    BATCHFILE.seek(0)
+
+def ClusterParameterSetup():
+    call("touch ClusterParameters.txt",shell=True)
+    ParameterFile = open("ClusterParameters.txt","w",encoding='ascii')
+    ParameterFile.truncate(0)
+    ParameterFile.seek(0)
     
-    for i in Commands:
-        #Make Sure it selects the correct parammeters
-        # Write to file and simplify user -input like for input and output files 
-    BATCHFILE.close()
 
+    ParameterFile.close()
+
+#=====================================================================
 
 
 if __name__ == '__main__':
@@ -1648,7 +1642,9 @@ if __name__ == '__main__':
     elif( sys.argv[1] == "S"):
         Setup()
     elif ( sys.argv[1] == "C"):
-        Cluster(sys.argv[1:])
+        ClusterRun(sys.argv[1:])
+    elif( sys.argv[1] =="CS"):
+        ClusterSetup()
     else:
         print("Sorry, you have entered an invalid parameter!")
 
