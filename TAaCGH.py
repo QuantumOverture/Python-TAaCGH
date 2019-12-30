@@ -1622,8 +1622,67 @@ def ClusterParameterSetup():
     ParameterFile = open("ClusterParameters.txt","w",encoding='ascii')
     ParameterFile.truncate(0)
     ParameterFile.seek(0)
-    
-
+    # Write up warnings and instructions
+    ParameterFile.write("Please DO NOT mess with the ordering of the lines in this file! Note explantations are taken from: https://wiki.cse.ucdavis.edu/support/hpc/software/slurm\n")
+    ParameterFile.write("Instructions(only add parameters to commands you want to modify otherwise ignore the specific command): Add your desired parameter after the commands e.g job name: horlings\n")
+    ParameterFile.write("\n")
+    # Write up --> Job Name
+    ParameterFile.write("* Job Name(explantion: Job Name): \n")
+    ParameterFile.write("\n")
+    # Write up --> Qutput File
+    ParameterFile.write("* Output File(explantion: Output sent to this file): \n")
+    ParameterFile.write("\n")   
+    # Write up --> Output File with node and job number
+    ParameterFile.write("* Output File With Job # and node info(explantion: Output file named with job number and the node the job landed on): \n")
+    ParameterFile.write("\n")
+    # Write up --> Error File
+    ParameterFile.write("* Error File(explantion: Errors written to this file): \n")
+    ParameterFile.write("\n")    
+    # Write up --> Partition
+    ParameterFile.write("* Partition/Priority(explantion: Run is the written partition (known as a queue in SGE)): \n")
+    ParameterFile.write("\n")
+    # Write up --> Node Request
+    ParameterFile.write("* Node number Request(explantion: Request nodes): \n")
+    ParameterFile.write("\n")
+    # Write up --> Task Per Node
+    ParameterFile.write("* Tasks Per Node(explantion: Request (written #) tasks per node. The number of tasks may not exceed the number of processor cores on the node): \n")
+    ParameterFile.write("\n")
+    # Write up --> Number of tasks
+    ParameterFile.write("* Number Of Tasks (explantion: Request 10 tasks for your job): \n")
+    ParameterFile.write("\n")
+    # Write up -->Time before death
+    ParameterFile.write("* Allotted time(explantion: Time before the program is terminated. Please write it in the following format- day hours minute seconds ): \n")
+    ParameterFile.write("\n")
+    # Write up -->mail configuration
+    ParameterFile.write("* Mail Configuration(explantion: Set type to: BEGIN to notify you when your job starts, END for when it ends, FAIL for if it fails, or ALL for all of the above): \n")
+    ParameterFile.write("\n")
+    # Write up -->Email Address
+    ParameterFile.write("* Email Address(explantion: Address that will recieve notifcations about the program ): \n")
+    ParameterFile.write("\n")
+    # Write up -->Memory per CPU
+    ParameterFile.write("* Memory per CPU(explantion: Specify a memory limit for each process of your job): \n")
+    ParameterFile.write("\n")
+    # Write up -->Memory per Node
+    ParameterFile.write("* Memory per Node(explantion:Specify a memory limit for each node of your job): \n")
+    ParameterFile.write("\n")
+    # Write up --> Exclusive
+    ParameterFile.write("* Exclusive Run(explantion:Specify that you need exclusive access to nodes for your job): \n")
+    ParameterFile.write("\n")
+    # Write up --> Share
+    ParameterFile.write("* Shared Run(explantion:Specify that your job may share nodes with other jobs): \n")
+    ParameterFile.write("\n")
+    # Write up --> Begin
+    ParameterFile.write("* Start Time(explantion: Start program after a certain time. Write in the following format: year month day hour second minute): \n")
+    ParameterFile.write("\n")
+    # Write up --> Begin Relative
+    ParameterFile.write("* Start Time relative to current time(explantion: Write in the following format: x [minutes,hours,days,or weeks]): \n")
+    ParameterFile.write("\n")
+    # Write up --> Dependancy 
+    ParameterFile.write("* Dependancy (explantion:Wait for jobs x and y to complete before starting.Write in the following format: x:y ): \n")
+    ParameterFile.write("\n")
+    # Write up --> Dependancy 
+    ParameterFile.write("* Dependancy [Correctness insurance](explantion:Wait for jobs x and y to complete without errors before starting.Write in the following format: x:y ): \n")
+    ParameterFile.write("\n")
     ParameterFile.close()
 
 #=====================================================================
@@ -1641,7 +1700,7 @@ if __name__ == '__main__':
         Clear()
     elif( sys.argv[1] == "S"):
         Setup()
-    elif ( sys.argv[1] == "C"):
+    elif ( sys.argv[1] == "CR"):
         ClusterRun(sys.argv[1:])
     elif( sys.argv[1] =="CS"):
         ClusterSetup()
