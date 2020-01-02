@@ -1608,7 +1608,51 @@ def Clear():
 def ClusterRun(Args):
     # JOB ARRAY IS PARRALLEL! EMBARSSINGLY PARRALLEL PARIDIGM.
     # Funnel  input for script functions --> Parameter File
-    pass
+    if "-m" in Args:
+        # Read input from terminal
+        pass
+    else:
+        if not os.path.isfile("ClusterParameters.txt"):
+            print("Fatal Error - No ClusterParameter.txt detected in File mode!")
+            print("Please Change your mode or intiate Cluster Setup command")
+            exit(1)
+        # Open ClusterParameters And Save All The Useable Lines in a good format.
+        ParameterFile = open("ClusterParameters.txt","r",encoding='ascii')
+        ParameterFileLines = ParameterFile.readlines()[2:]
+        ParameterFileLines = list(dict.fromkeys(ParameterFileLines))
+        ParameterFile.close()
+        ParameterFileLines.remove("\n")
+        
+        # Create Batch File With The User's Desired Name and Add User Parameters to it
+        BatchFile = open(Args[Args.index("-t")+1],"w",encoding='ascii')
+        BatchFile.truncate(0)
+        BatchFile.seek(0)
+        
+        #  ParameterFileLines --> i.split(" ") is a line
+        #  i[1] ==> SLURM syntax and special formating instructions here.
+        #  |--command| ==> normal command --> just prefix with #SBATCH and add parameters
+        #  |--command=...| ==> like nomarl command but add ... extension at the end of user parameters
+        #  |--comandT=...| ==> Special Time formating needed
+        #  |--Command&=...| ==> Special Dependancy Command 
+        
+        for i in ParameterFileLines:
+            l = i.split(" ")
+
+            # SKIP Unused lines
+
+            if l.index("->") + 1 == len(l) - 1:
+                continue
+            # STILL NEED TO ACCOMODATE SPECIAL CASES!
+            BatchFile.write("#SBATCH" + l[1].replace("|","") + "".join(l[l.index("->")+1:]) )
+            # Still need to add:
+            # sbatch CScript command to make it run in bash file --> Special Job array case for 4 and 5 --> Read from Parameter.txt
+            # -n and -N support
+            # -m mode support
+        BatchFile.close()
+        
+        # Still needed: Leave it Run or SFTP IT CHOICE
+        # Still needed -t is already taken --> check what it means and replace own.
+
 
 def ClusterSetup():
     # Setup everything for user (assume srun has been used here)
@@ -1627,61 +1671,61 @@ def ClusterParameterSetup():
     ParameterFile.write("Instructions(only add parameters to commands you want to modify otherwise ignore the specific command): Add your desired parameter after the commands e.g job name: horlings\n")
     ParameterFile.write("\n")
     # Write up --> Job Name
-    ParameterFile.write("* Job Name(explantion: Job Name): \n")
+    ParameterFile.write("* |--job-name| Job Name(explantion: Job Name) -> \n")
     ParameterFile.write("\n")
     # Write up --> Qutput File
-    ParameterFile.write("* Output File(explantion: Output sent to this file): \n")
+    ParameterFile.write("* |--output=.out| Output File(explantion: Output sent to this file) -> \n")
     ParameterFile.write("\n")   
     # Write up --> Output File with node and job number
-    ParameterFile.write("* Output File With Job # and node info(explantion: Output file named with job number and the node the job landed on): \n")
+    ParameterFile.write("* |--output=.%j.%N.out| Output File With Job # and node info(explantion: Output file named with job number and the node the job landed on) -> \n")
     ParameterFile.write("\n")
     # Write up --> Error File
-    ParameterFile.write("* Error File(explantion: Errors written to this file): \n")
+    ParameterFile.write("* |--error=.err| Error File(explantion: Errors written to this file) -> \n")
     ParameterFile.write("\n")    
     # Write up --> Partition
-    ParameterFile.write("* Partition/Priority(explantion: Run is the written partition (known as a queue in SGE)): \n")
+    ParameterFile.write("* |--partition| Partition/Priority(explantion: Run is the written partition (known as a queue in SGE)) -> \n")
     ParameterFile.write("\n")
     # Write up --> Node Request
-    ParameterFile.write("* Node number Request(explantion: Request nodes): \n")
+    ParameterFile.write("* |--nodes| Node number Request(explantion: Request nodes) -> \n")
     ParameterFile.write("\n")
     # Write up --> Task Per Node
-    ParameterFile.write("* Tasks Per Node(explantion: Request (written #) tasks per node. The number of tasks may not exceed the number of processor cores on the node): \n")
+    ParameterFile.write("* |--ntasks-per-node| Tasks Per Node(explantion: Request (written #) tasks per node. The number of tasks may not exceed the number of processor cores on the node) -> \n")
     ParameterFile.write("\n")
     # Write up --> Number of tasks
-    ParameterFile.write("* Number Of Tasks (explantion: Request 10 tasks for your job): \n")
+    ParameterFile.write("* |--ntasks| Number Of Tasks (explantion: Request 10 tasks for your job) -> \n")
     ParameterFile.write("\n")
     # Write up -->Time before death
-    ParameterFile.write("* Allotted time(explantion: Time before the program is terminated. Please write it in the following format- day hours minute seconds ): \n")
+    ParameterFile.write("* |--timeT=day-time| Allotted time(explantion: Time before the program is terminated. Please write it in the following format- day hours minute seconds ) -> \n")
     ParameterFile.write("\n")
     # Write up -->mail configuration
-    ParameterFile.write("* Mail Configuration(explantion: Set type to: BEGIN to notify you when your job starts, END for when it ends, FAIL for if it fails, or ALL for all of the above): \n")
+    ParameterFile.write("* |--mail-type| Mail Configuration(explantion: Set type to: BEGIN to notify you when your job starts, END for when it ends, FAIL for if it fails, or ALL for all of the above) -> \n")
     ParameterFile.write("\n")
     # Write up -->Email Address
-    ParameterFile.write("* Email Address(explantion: Address that will recieve notifcations about the program ): \n")
+    ParameterFile.write("* |--mail-user| Email Address(explantion: Address that will recieve notifcations about the program ) -> \n")
     ParameterFile.write("\n")
     # Write up -->Memory per CPU
-    ParameterFile.write("* Memory per CPU(explantion: Specify a memory limit for each process of your job): \n")
+    ParameterFile.write("* |--mem-per-cpu| Memory per CPU(explantion: Specify a memory limit for each process of your job) -> \n")
     ParameterFile.write("\n")
     # Write up -->Memory per Node
-    ParameterFile.write("* Memory per Node(explantion:Specify a memory limit for each node of your job): \n")
+    ParameterFile.write("* |--mem| Memory per Node(explantion:Specify a memory limit for each node of your job) -> \n")
     ParameterFile.write("\n")
     # Write up --> Exclusive
-    ParameterFile.write("* Exclusive Run(explantion:Specify that you need exclusive access to nodes for your job): \n")
+    ParameterFile.write("* |--exclusive| Exclusive Run(explantion:Specify that you need exclusive access to nodes for your job) -> \n")
     ParameterFile.write("\n")
     # Write up --> Share
-    ParameterFile.write("* Shared Run(explantion:Specify that your job may share nodes with other jobs): \n")
+    ParameterFile.write("* |--share| Shared Run(explantion:Specify that your job may share nodes with other jobs) -> \n")
     ParameterFile.write("\n")
     # Write up --> Begin
-    ParameterFile.write("* Start Time(explantion: Start program after a certain time. Write in the following format: year month day hour second minute): \n")
+    ParameterFile.write("* |--beginT=day-time| Start Time(explantion: Start program after a certain time. Write in the following format: year month day hour second minute) -> \n")
     ParameterFile.write("\n")
     # Write up --> Begin Relative
-    ParameterFile.write("* Start Time relative to current time(explantion: Write in the following format: x [minutes,hours,days,or weeks]): \n")
+    ParameterFile.write("* |--beginT=now+| Start Time relative to current time(explantion: Write in the following format: x [minutes,hours,days,or weeks]) -> \n")
     ParameterFile.write("\n")
     # Write up --> Dependancy 
-    ParameterFile.write("* Dependancy (explantion:Wait for jobs x and y to complete before starting.Write in the following format: x:y ): \n")
+    ParameterFile.write("* |--dependancy&=afterany:x:y| Dependancy (explantion:Wait for jobs x and y to complete before starting.Write in the following format: x:y ) -> \n")
     ParameterFile.write("\n")
     # Write up --> Dependancy 
-    ParameterFile.write("* Dependancy [Correctness insurance](explantion:Wait for jobs x and y to complete without errors before starting.Write in the following format: x:y ): \n")
+    ParameterFile.write("* |--dependancy&=afterok:x:y| Dependancy [Correctness insurance](explantion:Wait for jobs x and y to complete without errors before starting.Write in the following format: x:y ) -> \n")
     ParameterFile.write("\n")
     ParameterFile.close()
 
